@@ -19,6 +19,9 @@ MSG_NODE_DONE = 3
 MSG_NEW_INPUT = 4
 MSG_BUSY = 5
 
+MSG_PSO_RUN = 6
+MSG_PSO_REQ = 7
+MSG_PSO_DONE = 8
 
 class ServerConnection:
     def __init__(self, config):
@@ -56,6 +59,9 @@ class ServerConnection:
     def send_busy(self, client):
         client.send_bytes(msgpack.packb({"type": MSG_BUSY}, use_bin_type=True))
 
+    def send_pso_run(self, client, id, swarm_num, probability):
+            client.send_bytes(msgpack.packb({"type": MSG_PSO_RUN, "info": {"id": id, "swarm_num": swarm_num}, "probability": probability}, use_bin_type=True))
+
 
 class ClientConnection:
     def __init__(self, id, config):
@@ -82,3 +88,11 @@ class ClientConnection:
     def send_node_done(self, node_id, results, new_payload):
         self.sock.send_bytes(msgpack.packb(
             {"type": MSG_NODE_DONE, "node_id": node_id, "results": results, "new_payload": new_payload}, use_bin_type=True))
+
+    def send_pso_request(self, time):
+        self.sock.send_bytes(
+            msgpack.packb({"type": MSG_PSO_REQ, "time": time}, use_bin_type=True))
+
+    def send_pso_done(self, id, swarm_num, total_hit, finds, cycles):
+        self.sock.send_bytes(msgpack.packb(
+            {"type": MSG_PSO_DONE, "info": {"id": id, "swarm_num": swarm_num}, "state": {"total_hit": total_hit, "finds": finds, "cycles": cycles}}, use_bin_type=True))

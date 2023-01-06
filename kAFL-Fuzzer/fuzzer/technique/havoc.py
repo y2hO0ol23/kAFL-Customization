@@ -53,6 +53,9 @@ def mutate_seq_havoc_array(data, func, max_iterations, pso=None, resize=False):
     else:
         data = data
     
+    if pso:
+        pso.request_probability(max_iterations)
+        
     for _ in range(max_iterations):
         stacking = rand.int(AFL_HAVOC_STACK_POW2)
 
@@ -61,17 +64,16 @@ def mutate_seq_havoc_array(data, func, max_iterations, pso=None, resize=False):
                 data = pso.select_and_run_handler(data)
             else:
                 handler = rand.select(havoc_handler)
-
                 data = handler(data)
                 if len(data) >= KAFL_MAX_FILE:
                     data = data[:KAFL_MAX_FILE]
 
         recv = func(data, need_hits=True)
         if pso:
-            pso.update_cycles(sum(recv))
+            pso.update(sum(recv))
     
     if pso:
-        pso.end()
+        pso.done()
 
 
 def mutate_seq_splice_array(data, func, max_iterations, pso=None, resize=False):

@@ -24,6 +24,8 @@ from fuzzer.technique.redqueen.cmp import redqueen_global_config
 from fuzzer.bitmap import BitmapStorage
 from fuzzer.node import QueueNode
 
+from fuzzer.technique.pso import ServerPSO
+from fuzzer.communicator import MSG_PSO_REQ, MSG_PSO_DONE 
 
 class MasterProcess:
 
@@ -45,6 +47,8 @@ class MasterProcess:
                 redq_do_simple=self.config.argument_values['redq_do_simple'],
                 afl_arith_max=self.config.config_values['ARITHMETIC_MAX']
                 )
+
+        self.pso = ServerPSO(self.comm)
 
         log_master("Starting (pid: %d)" % os.getpid())
         log_master("Configuration dump:\n%s" %
@@ -99,13 +103,15 @@ class MasterProcess:
                     # Initial slave hello, send first task...
                     # log_master("Slave is ready..")
                     self.send_next_task(conn)
+                elif msg["type"] == MSG_PSO_REQ:
+                    self.pso.select_and_send(conn, msg["time"])
+                elif msg["type"] == MSG_PSO_DONE:
+                    self.pso.update_stats(msg['info'], msg['state'])
                 else:
                     raise ValueError("unknown message type {}".format(msg))
             self.statistics.event_slave_poll()
             self.statistics.maybe_write_stats()
             self.check_abort_condition()
-            if time.time()- start_time >= 60*60:
-                break
 
 
     def check_abort_condition(self):

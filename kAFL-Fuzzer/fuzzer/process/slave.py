@@ -66,7 +66,7 @@ def slave_loader(slave_id):
 
 num_funky = 0
 
-from fuzzer.technique.pso import PSO
+from fuzzer.technique.pso import ClientPSO
 
 class SlaveProcess:
 
@@ -81,7 +81,7 @@ class SlaveProcess:
 
         self.bitmap_storage = BitmapStorage(self.config, self.config.config_values['BITMAP_SHM_SIZE'], "master")
         
-        self.pso = PSO()
+        self.pso = ClientPSO(connection)
 
     def handle_import(self, msg):
         meta_data = {"state": {"name": "import"}, "id": 0}
@@ -127,21 +127,22 @@ class SlaveProcess:
             return
 
         log_slave("Started qemu", self.slave_id)
-        while True:
-            try:
+        try:
+            while True:
                 msg = self.conn.recv()
-            except ConnectionResetError:
-                log_slave("Lost connection to master. Shutting down.", self.slave_id)
-                return
 
-            if msg["type"] == MSG_RUN_NODE:
-                self.handle_node(msg)
-            elif msg["type"] == MSG_IMPORT:
-                self.handle_import(msg)
-            elif msg["type"] == MSG_BUSY:
-                self.handle_busy()
-            else:
-                raise ValueError("Unknown message type {}".format(msg))
+                if msg["type"] == MSG_RUN_NODE:
+                    self.handle_node(msg)
+                elif msg["type"] == MSG_IMPORT:
+                    self.handle_import(msg)
+                elif msg["type"] == MSG_BUSY:
+                    self.handle_busy()
+                else:
+                    raise ValueError("Unknown message type {}".format(msg))
+                
+        except ConnectionResetError:
+            log_slave("Lost connection to master. Shutting down.", self.slave_id)
+            return
 
     def quick_validate(self, data, old_res, quiet=False):
         # Validate in persistent mode. Faster but problematic for very funky targets
