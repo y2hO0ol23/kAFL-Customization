@@ -165,6 +165,7 @@ class ServerPSO:
         self.wait.append(0)
         self.done.append(0)
         self.state.append(ServerPSO.pilot)
+        self.debug(len(self.pso) - 1)
 
 
     def select_and_send(self, client, time, id=0):
@@ -187,7 +188,7 @@ class ServerPSO:
         if pso.time[PSO.get_core_num()] < PSO.period_core: # 실행 목표를 달성하지 못했다면
             self.wait[id] += 1 # 기다리고 있는 slave 갯수를 증가
             pso.time[PSO.get_core_num()] += time # 돌아가는 횟수를 미리 계산 후
-            print(f'[id{id}] core : {pso.time[PSO.get_core_num()]} / {PSO.period_core}')
+            #print(f'[id{id}] core : {pso.time[PSO.get_core_num()]} / {PSO.period_core}')
             self.comm.send_pso_run(client, id, PSO.get_core_num(), pso.probability_now[pso.fitness]) # slave로 정보를 보넴
             return True
 
@@ -203,7 +204,7 @@ class ServerPSO:
             if pso.time[tmp_swarm] < PSO.period_pilot: # 만약 실행 목표를 달성하지 못했다면
                 self.wait[id] += 1 # 기다리고 있는 slave 갯수를 증가
                 pso.time[tmp_swarm] += time # 돌아가는 횟수를 미리 계산 후
-                print(f'[id{id}] swarm{tmp_swarm} : {pso.time[tmp_swarm]} / {PSO.period_pilot}')
+                #print(f'[id{id}] swarm{tmp_swarm} : {pso.time[tmp_swarm]} / {PSO.period_pilot}')
                 self.comm.send_pso_run(client, id, tmp_swarm, pso.probability_now[tmp_swarm]) # slave로 정보를 보넴
                 return True
 
@@ -220,7 +221,8 @@ class ServerPSO:
         self.state[id] = ServerPSO.core # 코어 퍼징 상태로 바꿈
         self.done[id] = 0
         self.pso[id].core_fuzz_init()
-        print(f'[id{id}] start core fuzz')
+        self.debug(id)
+        #print(f'[id{id}] start core fuzz')
     
 
     def to_pilot_fuzz(self, id):
@@ -228,16 +230,30 @@ class ServerPSO:
         self.done[id] = 0
         self.pso[id].update_global() # pso 글로벌 값들을 바꿈
         self.pso[id].pilot_fuzz_init()
-        print(f'[id{id}] start pilot fuzz')
+        self.debug(id)
+        #print(f'[id{id}] start pilot fuzz')
 
 
     def update_stats(self, info, state): # 실행 후 정보를 slave에서 받은 경우우
         id = info['id']
         swarm_num = info['swarm_num']
-        pso:PSO = self.pso[id]
 
         self.wait[id] -= 1 # 기다리고 있는 slave 갯수를 감소
-        pso.update(swarm_num, state) # 해당 정보로 pso 변수들을 업데이트 함
+        self.pso[id].update(swarm_num, state) # 해당 정보로 pso 변수들을 업데이트 함
+    
+
+    def debug(self, id):
+        print(f'id: {id}, fuzz state: {self.state[id]}')
+        for i in range(PSO.swarm_num):
+            print(f'swarm{i}:', end=' ')
+            prob = [0] + self.pso[id].probability_now[i]
+            rate = []
+            for j in range(1, len(prob)):
+                rate.append(((prob[j] - prob[j-1]) / prob[-1]) * 100)
+            for r in rate:
+                print(('%.2f'%r).rjust(5, ' '), end='% ')
+            print('sum: %.2f%%'%sum(rate))
+        print()
 
 
 class ClientPSO:
