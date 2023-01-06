@@ -133,6 +133,8 @@ class PSO:
                     self.finds[self.swarm_now][i] += hit_cnt
                     self.cycles_old[self.swarm_now][i] = self.cycles[self.swarm_now][i]
 
+
+    def end(self):
         if self.time > PSO.get_period_time(self.swarm_now):
             if self.swarm_now == PSO.get_core_num():
                 self.update_global()

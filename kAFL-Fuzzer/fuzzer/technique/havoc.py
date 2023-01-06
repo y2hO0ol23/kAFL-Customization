@@ -69,6 +69,9 @@ def mutate_seq_havoc_array(data, func, max_iterations, pso=None, resize=False):
         recv = func(data, need_hits=True)
         if pso:
             pso.update_cycles(sum(recv))
+    
+    if pso:
+        pso.end()
 
 
 def mutate_seq_splice_array(data, func, max_iterations, pso=None, resize=False):

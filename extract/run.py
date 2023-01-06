@@ -14,4 +14,4 @@ count = 10
 
 for i in range(count):
     os.system(init)
-    os.system('mv ' + data_path + ' ' + path+'/out%5d'%i)
+    os.system('mv ' + data_path + ' ' + path+'/out' + f'{i}'.zfill(3))
