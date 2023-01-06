@@ -72,6 +72,7 @@ class PSO:
         del self.probability_now[tmp_swarm][0]
 
         for i in range(PSO.get_handler_num()):
+            self.finds_total[tmp_swarm][i] += self.finds[tmp_swarm][i]
             self.finds[tmp_swarm][i] = 0
             self.cycles[tmp_swarm][i] = 0
             self.cycles_old[tmp_swarm][i] = 0
@@ -87,10 +88,9 @@ class PSO:
         self.swarm_fitness = [0] * PSO.swarm_num
 
         self.finds = PSO.list_init()
-        #self.finds_old = PSO.list_init()
+        self.finds_total = PSO.list_init()
         self.cycles = PSO.list_init()
         self.cycles_old = PSO.list_init()
-        #self.cycles_old_old = PSO.list_init()
         
         self.total_hit = 0
         self.swarm_now = 0
@@ -143,18 +143,13 @@ class PSO:
 
                 for i in range(PSO.get_handler_num()):
                     eff = 0.0
-                    if self.cycles[self.swarm_now][i]:# > self.cycles_old_old[self.swarm_now][i]:
-                        #eff  = (self.finds[self.swarm_now][i] - self.finds_old[self.swarm_now][i])
-                        #eff /= (self.cycles[self.swarm_now][i] - self.cycles_old_old[self.swarm_now][i])
+                    if self.cycles[self.swarm_now][i]:
                         eff = self.finds[self.swarm_now][i] / self.cycles[self.swarm_now][i]
 
                     if self.eff_best[self.swarm_now][i] < eff:
                         self.eff_best[self.swarm_now][i] = eff
                         self.L_best[self.swarm_now][i] = self.x_now[self.swarm_now][i]
-
-                #self.finds_old[self.swarm_now] = self.finds[self.swarm_now][:]
-                #self.cycles_old_old[self.swarm_now] = self.cycles[self.swarm_now][:]
-
+                
                 self.swarm_now += 1
                 
                 if self.swarm_now == PSO.get_core_num():
@@ -176,7 +171,7 @@ class PSO:
         finds_total = [0 for _ in range(PSO.get_handler_num())]
         for i in range(PSO.get_handler_num()):
             for tmp_swarm in range(PSO.swarm_num):
-                finds_total[i] += self.finds[tmp_swarm][i]
+                finds_total[i] += self.finds[tmp_swarm][i] + self.finds_total[tmp_swarm][i]
         
         total = sum(finds_total)
 
