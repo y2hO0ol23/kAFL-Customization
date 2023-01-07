@@ -95,7 +95,9 @@ class PSO:
             for i in range(PSO.get_handler_num()):
                 self.finds[tmp_swarm][i] = 0
                 self.cycles[tmp_swarm][i] = 0
+                
             self.time[tmp_swarm] = 0
+            self.total_hit[tmp_swarm] = 0
 
 
     def core_fuzz_init(self):
@@ -193,8 +195,11 @@ class ServerPSO:
             return True
 
         else:
-            self.to_pilot_fuzz(id)
-            return self.stage_pilot_fuzz(client, time, id)
+            if not self.wait[id]:
+                self.to_pilot_fuzz(id)
+                return self.stage_pilot_fuzz(client, time, id)
+        
+        return False
 
 
     def stage_pilot_fuzz(self, client, time, id):
@@ -210,7 +215,7 @@ class ServerPSO:
 
             else:
                 self.done[id] |= 1 << tmp_swarm # 실행 목표를 달성하였다면 done 변수에 해당 swarm이 끝났다는 것을 표시함
-                if self.done[id] == (1 << PSO.swarm_num) - 1: # 만약 모든 swarm이 목표를 달성했다면
+                if not self.wait[id] and self.done[id] == (1 << PSO.swarm_num) - 1: # 만약 모든 swarm이 목표를 달성했다면
                     self.to_core_fuzz(id)
                     return self.stage_core_fuzz(client, time, id)
         
@@ -219,9 +224,7 @@ class ServerPSO:
 
     def to_core_fuzz(self, id):
         self.state[id] = ServerPSO.core # 코어 퍼징 상태로 바꿈
-        self.done[id] = 0
         self.pso[id].core_fuzz_init()
-        self.debug(id)
         #print(f'[id{id}] start core fuzz')
     
 
@@ -243,7 +246,7 @@ class ServerPSO:
     
 
     def debug(self, id):
-        print(f'id: {id}, fuzz state: {self.state[id]}')
+        print(f'id: {id}')
         for i in range(PSO.swarm_num):
             print(f'swarm{i}:', end=' ')
             prob = [0] + self.pso[id].probability_now[i]

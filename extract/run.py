@@ -5,6 +5,7 @@ init = """
 ./tests/user_bench/run.sh pack bison
 
 ./tests/user_bench/run.sh run bison -v
+
 """
 
 data_path = "/dev/shm/kafl_bison"
