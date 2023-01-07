@@ -11,7 +11,7 @@ init = """
 data_path = "/dev/shm/kafl_bison"
 
 path = os.path.dirname(os.path.abspath(__file__))
-count = 10
+count = 5
 
 for i in range(count):
     os.system(init)

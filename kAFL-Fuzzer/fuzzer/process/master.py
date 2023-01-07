@@ -112,6 +112,8 @@ class MasterProcess:
             self.statistics.event_slave_poll()
             self.statistics.maybe_write_stats()
             self.check_abort_condition()
+            if time.time() - start_time == 60*60:
+                break
 
 
     def check_abort_condition(self):

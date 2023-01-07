@@ -67,7 +67,7 @@ def mutate_seq_havoc_array(data, func, max_iterations, pso=None, resize=False):
                 data = handler(data)
                 if len(data) >= KAFL_MAX_FILE:
                     data = data[:KAFL_MAX_FILE]
-
+        
         recv = func(data, need_hits=True)
         if pso:
             pso.update(sum(recv))
