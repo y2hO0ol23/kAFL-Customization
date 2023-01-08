@@ -259,12 +259,12 @@ class ServerPSO:
         print(f'[{self.time_now()}] id {id} : start pilot fuzz')
 
 
-    def update_stats(self, info, state): # 실행 후 정보를 slave에서 받은 경우우
-        id = info['id']
-        swarm_num = info['swarm_num']
+    def update_stats(self, data): # 실행 후 정보를 slave에서 받은 경우우
+        id = data['info']['id']
+        swarm_num = data['info']['swarm_num']
 
         self.wait[id] -= 1 # 기다리고 있는 slave 갯수를 감소
-        self.pso[id].update(swarm_num, state) # 해당 정보로 pso 변수들을 업데이트 함
+        self.pso[id].update(swarm_num, data['state']) # 해당 정보로 pso 변수들을 업데이트 함
     
 
 
