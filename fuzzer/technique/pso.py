@@ -182,7 +182,6 @@ class ServerPSO:
         self.done.append(0)
         self.state.append(ServerPSO.pilot)
         self.count += 1
-        #self.debug(self.count - 1)
         return self.count - 1
 
 
@@ -241,7 +240,6 @@ class ServerPSO:
     def to_core_fuzz(self, id):
         self.state[id] = ServerPSO.core # 코어 퍼징 상태로 바꿈
         self.pso[id].core_fuzz_init()
-        #self.debug(id)
         print(f'[id {id}] - core fuzz')
     
 
@@ -249,7 +247,6 @@ class ServerPSO:
         self.state[id] = ServerPSO.pilot # 퍼징 상태를 바꿈
         self.done[id] = 0
         self.pso[id].update_global() # pso 글로벌 값들을 바꿈
-        #self.debug(id)
         self.pso[id].pilot_fuzz_init()
         self.select_main_id()
         print(f'[id {id}] - pilot fuzz')
@@ -262,32 +259,6 @@ class ServerPSO:
         self.wait[id] -= 1 # 기다리고 있는 slave 갯수를 감소
         self.pso[id].update(swarm_num, state) # 해당 정보로 pso 변수들을 업데이트 함
     
-
-    def debug(self, id):
-        print(f'id: {id}')
-        pso:PSO = self.pso[id]
-
-        for tmp_swarm in range(PSO.swarm_num):
-            print(f'swarm{tmp_swarm}:', end=' ')
-            prob = [0] + pso.probability_now[tmp_swarm]
-            rate = []
-            for i in range(1, len(prob)):
-                rate.append(((prob[i] - prob[i-1]) / prob[-1]) * 100)
-            for r in rate:
-                print(('%.2f'%r).rjust(5, ' '), end='% ')
-            print()
-
-        for tmp_swarm in range(PSO.get_swarm_num()):
-            print(f'swarm{tmp_swarm} time: {pso.time[tmp_swarm]}, total_hit: {pso.total_hit[tmp_swarm]}')
-            print(f'swarm{tmp_swarm} finds:'.ljust(15, ' '), end=' ')
-            for i in range(PSO.get_handler_num()):
-                print('%5d'%pso.finds[tmp_swarm][i], end=' ')
-            print()
-            print(f'swarm{tmp_swarm} cycles:'.ljust(15, ' '), end=' ')
-            for i in range(PSO.get_handler_num()):
-                print('%5d'%pso.cycles[tmp_swarm][i], end=' ')
-            print()
-        print()
 
 
 class ClientPSO:
