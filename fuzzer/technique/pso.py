@@ -169,10 +169,10 @@ class ServerPSO:
     
     def time_now(self):
         t = int(time.time() - self.start_time)
-        s = t % 60
-        m = (t / 60) % 60
-        h = ((t / 60) / 60) % 60
-        return f'%2d:%2d:%2d'%(h,m,s)
+        s = str(t % 60).rjust(2, '0')
+        m = str((t / 60) % 60).rjust(2, '0')
+        h = str(((t / 60) / 60) % 60).rjust(2, '0')
+        return f'{h}:{m}:{s}'
 
 
     def select_main_id(self): # 현재까지 진행한 횟수가 가장 많은 pso space를 선택
