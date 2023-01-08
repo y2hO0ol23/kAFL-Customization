@@ -216,6 +216,7 @@ class ServerPSO:
         if pso.time[PSO.get_core_num()] < PSO.period_core: # 실행 목표를 달성하지 못했다면
             self.wait[id] += 1 # 기다리고 있는 slave 갯수를 증가
             pso.time[PSO.get_core_num()] += time # 돌아가는 횟수를 미리 계산 후
+            print(f'[id {id}] {pso.time[PSO.get_core_num()]}/{PSO.period_core}')
             return {"info": {"id": id, "swarm_num": PSO.get_core_num()}, "probability": pso.probability_now[pso.fitness]}
 
         else:
@@ -231,8 +232,9 @@ class ServerPSO:
 
         if pso.time[self.swarm_now[id]] >= PSO.period_pilot:
             self.swarm_now[id] += 1
-
-        if self.swarm_now[id] == PSO.get_core_num():
+        
+        swarm_now = self.swarm_now[id]
+        if swarm_now == PSO.get_core_num():
             if self.wait[id]:
                 return None
             else:
@@ -240,8 +242,9 @@ class ServerPSO:
                 return self.stage_core_fuzz(time, id)
         else:
             self.wait[id] += 1
-            pso.time[self.swarm_now[id]] += time
-            return {"info": {"id": id, "swarm_num": self.swarm_now[id]}, "probability": pso.probability_now[self.swarm_now[id]]}
+            pso.time[swarm_now] += time
+            print(f'[id {id}] {pso.time[swarm_now]}/{PSO.period_pilot}')
+            return {"info": {"id": id, "swarm_num": swarm_now}, "probability": pso.probability_now[swarm_now]}
 
 
     def to_core_fuzz(self, id):

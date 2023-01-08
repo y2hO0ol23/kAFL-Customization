@@ -90,7 +90,6 @@ class MasterProcess:
                     
                     if "pso" in msg.get("results",{}):
                         if msg["results"]["pso"] != 'init':
-                            print(msg["results"]["pso"])
                             self.pso.update_stats(msg["results"]["pso"])
 
                         perf = msg["results"].get("performance", 0)
