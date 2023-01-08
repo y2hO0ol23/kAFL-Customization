@@ -1,6 +1,7 @@
 from fuzzer.technique.havoc_handler import *
 from fuzzer.communicator import MSG_PSO_RUN
 import random
+import time
 
 class PSO:
     period_core = 500000
@@ -41,6 +42,7 @@ class PSO:
         if ed < val: return ed
 
         return val
+
 
     def update_probability(self, tmp_swarm):
         w_now = (PSO.w_init - PSO.w_end)*(PSO.g_max - self.g_now) / (PSO.g_max)+PSO.w_end
@@ -162,6 +164,15 @@ class ServerPSO:
         self.count = 0
         self.main_id = self.make_new()
         self.comm = comm
+        self.start_time = time.time()
+    
+    
+    def time_now(self):
+        time = int(time.time() - self.start_time)
+        s = time % 60
+        m = (time / 60) % 60
+        h = ((time / 60) / 60) % 60
+        return f'%2d:%2d:%2d'%(h,m,s)
 
 
     def select_main_id(self): # 현재까지 진행한 횟수가 가장 많은 pso space를 선택
@@ -240,7 +251,7 @@ class ServerPSO:
     def to_core_fuzz(self, id):
         self.state[id] = ServerPSO.core # 코어 퍼징 상태로 바꿈
         self.pso[id].core_fuzz_init()
-        print(f'[id {id}] - core fuzz')
+        print(f'[{self.time_now()}] id {id} : start core fuzz')
     
 
     def to_pilot_fuzz(self, id):
@@ -249,7 +260,7 @@ class ServerPSO:
         self.pso[id].update_global() # pso 글로벌 값들을 바꿈
         self.pso[id].pilot_fuzz_init()
         self.select_main_id()
-        print(f'[id {id}] - pilot fuzz')
+        print(f'[{self.time_now()}] id {id} : start pilot fuzz')
 
 
     def update_stats(self, info, state): # 실행 후 정보를 slave에서 받은 경우우
