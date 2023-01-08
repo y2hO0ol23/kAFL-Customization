@@ -232,19 +232,17 @@ class ServerPSO:
     def stage_pilot_fuzz(self, client, time, id):
         pso:PSO = self.pso[id]
 
-        if pso.time[self.swarm_now[id]] < PSO.period_pilot:
+        if pso.time[self.swarm_now[id]] >= PSO.period_pilot:
+            self.swarm_now[id] += 1
+
+        if not self.wait[id] and self.swarm_now[id] == PSO.get_core_num():
+            self.to_core_fuzz(id)
+            return self.stage_core_fuzz(client, time, id)
+        else:
             self.wait[id] += 1
             pso.time[self.swarm_now[id]] += time
             self.comm.send_pso_run(client, id, self.swarm_now[id], pso.probability_now[self.swarm_now[id]])
             return True
-
-        else:
-            self.swarm_now[id] += 1
-            if not self.wait[id] and self.swarm_now[id] == PSO.get_core_num():
-                self.to_core_fuzz(id)
-                return self.stage_core_fuzz(client, time, id)
-            else:
-                return self.stage_pilot_fuzz(client, time, id)
 
 
     def to_core_fuzz(self, id):
