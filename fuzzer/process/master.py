@@ -91,14 +91,14 @@ class MasterProcess:
                     
                     if "pso" in msg.get("results",{}):
                         if msg["results"]["pso"] != 'init':
-                            self.pso.update_stats(msg["result"]["pso"])
+                            self.pso.update_stats(msg["results"]["pso"])
+                            
+                        print(msg["results"]["pso"])
 
                         perf = msg["results"].get("performance", 0)
                         havoc_amount = havoc.havoc_range(FuzzingStateLogic.HAVOC_MULTIPLIER / perf)
                         total_amount = havoc_amount + 2*havoc_amount
                         msg["results"]["pso"] = self.pso.select(total_amount)
-                        
-                        print(msg["results"]["pso"])
 
                     if msg["node_id"]:
                         self.queue.update_node_results(msg["node_id"], msg["results"], msg["new_payload"])
