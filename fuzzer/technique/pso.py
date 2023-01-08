@@ -232,19 +232,18 @@ class ServerPSO:
     def stage_pilot_fuzz(self, client, time, id):
         pso:PSO = self.pso[id]
 
-        for tmp_swarm in range(PSO.swarm_num): # 모든 swarm을 살펴보며
-            if pso.time[tmp_swarm] < PSO.period_pilot: # 만약 실행 목표를 달성하지 못했다면
-                self.wait[id] += 1 # 기다리고 있는 slave 갯수를 증가
-                pso.time[tmp_swarm] += time # 돌아가는 횟수를 미리 계산 후
-                self.comm.send_pso_run(client, id, tmp_swarm, pso.probability_now[tmp_swarm]) # slave로 정보를 보넴
-                return True
+        if pso.time[self.done[id]] < PSO.period_pilot:
+            self.wait[id] += 1
+            pso.time[self.done[id]] += time
+            self.comm.send_pso_run(client, id, tmp_swarm, pso.probability_now[tmp_swarm])
+            return True
 
-            else:
-                self.done[id] |= 1 << tmp_swarm # 실행 목표를 달성하였다면 done 변수에 해당 swarm이 끝났다는 것을 표시함
-                if not self.wait[id] and self.done[id] == (1 << PSO.swarm_num) - 1: # 만약 모든 swarm이 목표를 달성했다면
-                    self.to_core_fuzz(id)
-                    return self.stage_core_fuzz(client, time, id)
-        
+        else:
+            self.done[id] += 1
+            if not self.wait[id] and self.done[id] == PSO.get_core_num():
+                self.to_core_fuzz(id)
+                return self.stage_core_fuzz(client, time, id)
+            
         return False
 
 
