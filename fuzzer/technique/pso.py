@@ -243,8 +243,8 @@ class ServerPSO:
             if not self.wait[id] and self.swarm_now[id] == PSO.get_core_num():
                 self.to_core_fuzz(id)
                 return self.stage_core_fuzz(client, time, id)
-            
-        return False
+            else:
+                return self.stage_pilot_fuzz(client, time, id)
 
 
     def to_core_fuzz(self, id):
