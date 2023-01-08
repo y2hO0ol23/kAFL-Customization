@@ -226,7 +226,7 @@ class ServerPSO:
         return None
 
 
-    def stage_pilot_fuzz(self, client, time, id):
+    def stage_pilot_fuzz(self, time, id):
         pso:PSO = self.pso[id]
 
         if pso.time[self.swarm_now[id]] >= PSO.period_pilot:
@@ -237,7 +237,7 @@ class ServerPSO:
                 return None
             else:
                 self.to_core_fuzz(id)
-                return self.stage_core_fuzz(client, time, id)
+                return self.stage_core_fuzz(time, id)
         else:
             self.wait[id] += 1
             pso.time[self.swarm_now[id]] += time
