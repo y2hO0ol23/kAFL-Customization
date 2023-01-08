@@ -1,5 +1,4 @@
 from fuzzer.technique.havoc_handler import *
-from fuzzer.communicator import MSG_PSO_RUN
 import random
 import time
 
