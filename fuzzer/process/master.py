@@ -90,10 +90,10 @@ class MasterProcess:
                     log_master("Received results, sending next task..")
                     
                     if "pso" in msg.get("results",{}):
+                        print(msg["results"]["pso"])
+
                         if msg["results"]["pso"] != 'init':
                             self.pso.update_stats(msg["results"]["pso"])
-                            
-                        print(msg["results"]["pso"])
 
                         perf = msg["results"].get("performance", 0)
                         havoc_amount = havoc.havoc_range(FuzzingStateLogic.HAVOC_MULTIPLIER / perf)
