@@ -160,7 +160,7 @@ class ServerPSO:
         self.pso = []
         self.wait = []
         self.state = []
-        self.done = []
+        self.swarm_now = []
         self.count = 0
         self.main_id = self.make_new()
         self.comm = comm
@@ -190,7 +190,7 @@ class ServerPSO:
     def make_new(self):
         self.pso.append(PSO())
         self.wait.append(0)
-        self.done.append(0)
+        self.swarm_now.append(0)
         self.state.append(ServerPSO.pilot)
         self.count += 1
         return self.count - 1
@@ -232,15 +232,15 @@ class ServerPSO:
     def stage_pilot_fuzz(self, client, time, id):
         pso:PSO = self.pso[id]
 
-        if pso.time[self.done[id]] < PSO.period_pilot:
+        if pso.time[self.swarm_now[id]] < PSO.period_pilot:
             self.wait[id] += 1
-            pso.time[self.done[id]] += time
-            self.comm.send_pso_run(client, id, tmp_swarm, pso.probability_now[tmp_swarm])
+            pso.time[self.swarm_now[id]] += time
+            self.comm.send_pso_run(client, id, self.swarm_now[id], pso.probability_now[self.swarm_now[id]])
             return True
 
         else:
-            self.done[id] += 1
-            if not self.wait[id] and self.done[id] == PSO.get_core_num():
+            self.swarm_now[id] += 1
+            if not self.wait[id] and self.swarm_now[id] == PSO.get_core_num():
                 self.to_core_fuzz(id)
                 return self.stage_core_fuzz(client, time, id)
             
@@ -255,7 +255,7 @@ class ServerPSO:
 
     def to_pilot_fuzz(self, id):
         self.state[id] = ServerPSO.pilot # 퍼징 상태를 바꿈
-        self.done[id] = 0
+        self.swarm_now[id] = 0
         self.pso[id].update_global() # pso 글로벌 값들을 바꿈
         self.pso[id].pilot_fuzz_init()
         self.select_main_id()
