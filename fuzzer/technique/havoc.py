@@ -52,9 +52,6 @@ def mutate_seq_havoc_array(data, func, max_iterations, pso=None, resize=False):
         data = data + data
     else:
         data = data
-    
-    if pso and pso.need_request:
-        pso.request_probability(max_iterations)
         
     for _ in range(max_iterations):
         stacking = rand.int(AFL_HAVOC_STACK_POW2)
@@ -76,12 +73,9 @@ def mutate_seq_havoc_array(data, func, max_iterations, pso=None, resize=False):
 def mutate_seq_splice_array(data, func, max_iterations, pso=None, resize=False):
     global location_corpus
     splice_rounds = 16
-    pso.request_probability(2*max_iterations)
     files = glob.glob(location_corpus + "/regular/payload_*")
     for _ in range(splice_rounds):
         spliced_data = havoc_splicing(data, files)
-        if spliced_data is None:
-            return # could not find any suitable splice pair for this file
         mutate_seq_havoc_array(spliced_data,
                                func,
                                int(2*max_iterations/splice_rounds),

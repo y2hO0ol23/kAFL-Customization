@@ -25,6 +25,8 @@ from fuzzer.bitmap import BitmapStorage
 from fuzzer.node import QueueNode
 
 from fuzzer.technique.pso import ServerPSO
+import fuzzer.technique.havoc as havoc
+from fuzzer.state_logic import FuzzingStateLogic
 from fuzzer.communicator import MSG_PSO_REQ, MSG_PSO_DONE 
 
 class MasterProcess:
@@ -48,7 +50,7 @@ class MasterProcess:
                 afl_arith_max=self.config.config_values['ARITHMETIC_MAX']
                 )
 
-        self.pso = ServerPSO(self.comm)
+        self.pso = ServerPSO()
 
         log_master("Starting (pid: %d)" % os.getpid())
         log_master("Configuration dump:\n%s" %
@@ -86,6 +88,18 @@ class MasterProcess:
                 if msg["type"] == MSG_NODE_DONE:
                     # Slave execution done, update queue item + send new task
                     log_master("Received results, sending next task..")
+
+                    if msg["result"]["pso"]:
+                        if msg["result"]["pso"] != 'init':
+                            self.pso.update_stats(msg["result"]["pso"])
+
+                        perf = msg["result"].get("performance", 0)
+                        havoc_amount = havoc.havoc_range(FuzzingStateLogic.HAVOC_MULTIPLIER / perf)
+                        total_amount = havoc_amount + 2*havoc_amount
+                        msg["result"]["pso"] = self.pso.select(total_amount)
+                        
+                        print(msg["result"]["pso"])
+
                     if msg["node_id"]:
                         self.queue.update_node_results(msg["node_id"], msg["results"], msg["new_payload"])
                     self.send_next_task(conn)
@@ -101,10 +115,6 @@ class MasterProcess:
                     # Initial slave hello, send first task...
                     # log_master("Slave is ready..")
                     self.send_next_task(conn)
-                elif msg["type"] == MSG_PSO_REQ:
-                    self.pso.select_and_send(conn, msg["time"])
-                elif msg["type"] == MSG_PSO_DONE:
-                    self.pso.update_stats(msg['info'], msg['state'])
                 else:
                     raise ValueError("unknown message type {}".format(msg))
             self.statistics.event_slave_poll()

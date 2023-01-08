@@ -101,19 +101,22 @@ class FuzzingStateLogic:
             resume, afl_det_info = self.handle_deterministic(payload, metadata)
             if resume:
                 return self.create_update({"name": "deterministic"}, {"afl_det_info": afl_det_info}), None
-            return self.create_update({"name": "havoc"}, {"afl_det_info": afl_det_info}), None
+            return self.create_update({"name": "havoc"}, {"afl_det_info": afl_det_info, "pso":'init'}), None
         elif metadata["state"]["name"] == "havoc":
             self.handle_havoc(payload, metadata)
-            return self.create_update({"name": "final"}, None), None
+            return self.create_update({"name": "final"}, {"pso":self.slave.pso.result()}), None
         elif metadata["state"]["name"] == "final":
             self.handle_havoc(payload, metadata)
-            return self.create_update({"name": "final"}, None), None
+            return self.create_update({"name": "final"}, {"pso":self.slave.pso.result()}), None
         else:
             raise ValueError("Unknown task stage %s" % metadata["state"]["name"])
 
     def init_stage_info(self, metadata, verbose=False):
         stage = metadata["state"]["name"]
         nid = metadata["id"]
+
+        if metadata.get("pso", None):
+            self.slave.pso.init(metadata.get("pso", None))
 
         self.stage_info["stage"] = stage
         self.stage_info["parent"] = nid
@@ -515,8 +518,6 @@ class FuzzingStateLogic:
         else:
             self.stage_update_label("havoc-mopt")
             havoc.mutate_seq_havoc_array(payload_array, self.execute, havoc_amount, pso=self.slave.pso)
-        
-        self.slave.pso.done()
 
 
     def __check_colorization(self, orig_hash, payload_array, min, max):

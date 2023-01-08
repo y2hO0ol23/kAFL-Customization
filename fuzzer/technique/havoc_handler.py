@@ -237,7 +237,7 @@ def havoc_splicing(data, files):
         return data[:split_location] + file_data[split_location:]
 
     # none of the files are suitable
-    return None
+    return data
 
 
 dict_set = set()

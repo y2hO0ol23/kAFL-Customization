@@ -156,14 +156,13 @@ class ServerPSO:
     pilot = 0
     core = 1
 
-    def __init__(self, comm):
+    def __init__(self):
         self.pso = []
         self.wait = []
         self.state = []
         self.swarm_now = []
         self.count = 0
         self.main_id = self.make_new()
-        self.comm = comm
         self.start_time = time.time()
     
     
@@ -196,37 +195,35 @@ class ServerPSO:
         return self.count - 1
 
 
-    def select_and_send(self, client, time, id=None):
+    def select(self, time, id=None):
         if id == None:
             id = self.main_id
         elif id == self.main_id: # pso 공간이 부족하다면
             id = self.make_new() # 새롭게 생성
 
         if self.state[id] == ServerPSO.core:
-            if self.stage_core_fuzz(client, time, id):
-                return
+            res = self.stage_core_fuzz(time, id)
         else:
-            if self.stage_pilot_fuzz(client, time, id):
-                return
-                    
-        self.select_and_send(client, time, self.next_id(id)) # slave에 정보를 보내지 못했다면 다음 아이디에서 같은 과정을 반복
+            res = self.stage_pilot_fuzz(time, id)
+        
+        if res: return res
+        return self.select(time, self.next_id(id)) # slave에 정보를 보내지 못했다면 다음 아이디에서 같은 과정을 반복
 
 
-    def stage_core_fuzz(self, client, time, id):
+    def stage_core_fuzz(self, time, id):
         pso:PSO = self.pso[id]
 
         if pso.time[PSO.get_core_num()] < PSO.period_core: # 실행 목표를 달성하지 못했다면
             self.wait[id] += 1 # 기다리고 있는 slave 갯수를 증가
             pso.time[PSO.get_core_num()] += time # 돌아가는 횟수를 미리 계산 후
-            self.comm.send_pso_run(client, id, PSO.get_core_num(), pso.probability_now[pso.fitness]) # slave로 정보를 보넴
-            return True
+            return {"info": {"id": id, "swarm_num": PSO.get_core_num()}, "probability": pso.probability_now[pso.fitness]}
 
         else:
             if not self.wait[id]:
                 self.to_pilot_fuzz(id)
-                return self.stage_pilot_fuzz(client, time, id)
+                return self.stage_pilot_fuzz(time, id)
         
-        return False
+        return None
 
 
     def stage_pilot_fuzz(self, client, time, id):
@@ -237,15 +234,14 @@ class ServerPSO:
 
         if self.swarm_now[id] == PSO.get_core_num():
             if self.wait[id]:
-                return False
+                return None
             else:
                 self.to_core_fuzz(id)
                 return self.stage_core_fuzz(client, time, id)
         else:
             self.wait[id] += 1
             pso.time[self.swarm_now[id]] += time
-            self.comm.send_pso_run(client, id, self.swarm_now[id], pso.probability_now[self.swarm_now[id]])
-            return True
+            return {"info": {"id": id, "swarm_num": self.swarm_now[id]}, "probability": pso.probability_now[self.swarm_now[id]]}
 
 
     def to_core_fuzz(self, id):
@@ -278,7 +274,6 @@ class ClientPSO:
         self.cycles = [0]*PSO.get_handler_num()
         self.cycles_old = [0]*PSO.get_handler_num()
         self.finds = [0]*PSO.get_handler_num()
-        self.need_request = True
     
     def reset(self):
         self.total_hit = 0
@@ -286,19 +281,12 @@ class ClientPSO:
             self.cycles[i] = 0
             self.cycles_old[i] = 0
             self.finds[i] = 0
-        self.need_request = False
 
-    def request_probability(self, time):
-        self.conn.send_pso_request(time)
-        msg = self.conn.recv()
-        
-        if msg["type"] == MSG_PSO_RUN:
-            self.probability_now = msg["probability"]
-            self.id = msg["info"]["id"]
-            self.swarm_num = msg["info"]["swarm_num"]
-            self.reset()
-        else:
-            raise ValueError("Unknown message type {}".format(msg))
+    def init(self, msg):
+        self.probability_now = msg["probability"]
+        self.id = msg["info"]["id"]
+        self.swarm_num = msg["info"]["swarm_num"]
+        self.reset()
 
 
     def select_and_run_handler(self, data):
@@ -328,6 +316,6 @@ class ClientPSO:
                     self.cycles_old[i] = self.cycles[i]
 
 
-    def done(self):
-        self.conn.send_pso_done(self.id, self.swarm_num, self.total_hit, self.finds, self.cycles)
-        self.need_request = True
+    def result(self):
+        return {"info": {"id": self.id, "swarm_num": self.swarm_num}, "state": {"total_hit": self.total_hit, "finds": self.finds, "cycles": self.cycles}}
+
