@@ -27,7 +27,6 @@ from fuzzer.node import QueueNode
 from fuzzer.technique.pso import ServerPSO
 import fuzzer.technique.havoc as havoc
 from fuzzer.state_logic import FuzzingStateLogic
-from fuzzer.communicator import MSG_PSO_REQ, MSG_PSO_DONE 
 
 class MasterProcess:
 
@@ -90,9 +89,8 @@ class MasterProcess:
                     log_master("Received results, sending next task..")
                     
                     if "pso" in msg.get("results",{}):
-                        print(msg["results"]["pso"])
-
                         if msg["results"]["pso"] != 'init':
+                            print(msg["results"]["pso"])
                             self.pso.update_stats(msg["results"]["pso"])
 
                         perf = msg["results"].get("performance", 0)
