@@ -236,6 +236,7 @@ class ServerPSO:
         swarm_now = self.swarm_now[id]
         if swarm_now == PSO.get_core_num():
             if self.wait[id]:
+                print(f'[id {id} | core] wait {self.wait[id]}')
                 return None
             else:
                 self.to_core_fuzz(id)
