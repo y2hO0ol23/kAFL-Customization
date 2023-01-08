@@ -191,6 +191,7 @@ class ServerPSO:
         self.swarm_now.append(0)
         self.state.append(ServerPSO.pilot)
         self.count += 1
+        print(f"new id created. id {self.count - 1}")
         return self.count - 1
 
 
@@ -205,7 +206,7 @@ class ServerPSO:
         else:
             res = self.stage_pilot_fuzz(time, id)
         
-        if res: return res
+        if res != None: return res
         return self.select(time, self.next_id(id)) # slave에 정보를 보내지 못했다면 다음 아이디에서 같은 과정을 반복
 
 
