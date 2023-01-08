@@ -1,18 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
-this="/kAFL-Customization"
 dirPath=`dirname $0`
-
-if [ "$dirPath" != *"$this" ]; then
-    echo "[-] wrong directory name. must be $this"
-    exit 1
-fi
-
 execDir=`pwd`
 cd $dirPath/..
 
 if [ "$execDir" != `pwd` ]; then
-    echo "[-] execute on directory: `pwd`"
+    echo "[-] Execute on directory: `pwd`"
+    exit 1
+fi
+
+this="/kAFL-Customization"
+if [[ "$dirPath" != *$this ]]; then
+    echo "[-] Wrong directory name. Must be $this"
     exit 2
 fi
 
@@ -33,5 +32,5 @@ if [ -d "./kAFL-Fuzzer" ]; then
 fi
 
 cp -rf ./kAFL-Customization ./kAFL-Fuzzer
-rm ./kAFL-Fuzzer/setup.sh
+rm ./kAFL-Fuzzer/setup.bash
 echo "[*] Done"
