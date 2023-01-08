@@ -53,7 +53,7 @@ def mutate_seq_havoc_array(data, func, max_iterations, pso=None, resize=False):
     else:
         data = data
     
-    if pso:
+    if pso and pso.need_request:
         pso.request_probability(max_iterations)
         
     for _ in range(max_iterations):
@@ -71,14 +71,12 @@ def mutate_seq_havoc_array(data, func, max_iterations, pso=None, resize=False):
         recv = func(data, need_hits=True)
         if pso:
             pso.update(sum(recv))
-    
-    if pso:
-        pso.done()
 
 
 def mutate_seq_splice_array(data, func, max_iterations, pso=None, resize=False):
     global location_corpus
     splice_rounds = 16
+    pso.request_probability(2*max_iterations)
     files = glob.glob(location_corpus + "/regular/payload_*")
     for _ in range(splice_rounds):
         spliced_data = havoc_splicing(data, files)

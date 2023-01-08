@@ -278,6 +278,7 @@ class ClientPSO:
         self.cycles = [0]*PSO.get_handler_num()
         self.cycles_old = [0]*PSO.get_handler_num()
         self.finds = [0]*PSO.get_handler_num()
+        self.need_request = True
     
     def reset(self):
         self.total_hit = 0
@@ -285,6 +286,7 @@ class ClientPSO:
             self.cycles[i] = 0
             self.cycles_old[i] = 0
             self.finds[i] = 0
+        self.need_request = False
 
     def request_probability(self, time):
         self.conn.send_pso_request(time)
@@ -328,3 +330,4 @@ class ClientPSO:
 
     def done(self):
         self.conn.send_pso_done(self.id, self.swarm_num, self.total_hit, self.finds, self.cycles)
+        self.need_request = True

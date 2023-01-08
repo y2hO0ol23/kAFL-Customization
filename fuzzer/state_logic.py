@@ -515,6 +515,8 @@ class FuzzingStateLogic:
         else:
             self.stage_update_label("havoc-mopt")
             havoc.mutate_seq_havoc_array(payload_array, self.execute, havoc_amount, pso=self.slave.pso)
+        
+        self.slave.pso.done()
 
 
     def __check_colorization(self, orig_hash, payload_array, min, max):
