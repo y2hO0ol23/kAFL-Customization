@@ -182,7 +182,7 @@ class ServerPSO:
         self.done.append(0)
         self.state.append(ServerPSO.pilot)
         self.count += 1
-        self.debug(self.count - 1)
+        #self.debug(self.count - 1)
         return self.count - 1
 
 
@@ -241,16 +241,18 @@ class ServerPSO:
     def to_core_fuzz(self, id):
         self.state[id] = ServerPSO.core # 코어 퍼징 상태로 바꿈
         self.pso[id].core_fuzz_init()
-        self.debug(id)
+        #self.debug(id)
+        print(f'[id {id}] - core fuzz')
     
 
     def to_pilot_fuzz(self, id):
         self.state[id] = ServerPSO.pilot # 퍼징 상태를 바꿈
         self.done[id] = 0
         self.pso[id].update_global() # pso 글로벌 값들을 바꿈
-        self.debug(id)
+        #self.debug(id)
         self.pso[id].pilot_fuzz_init()
         self.select_main_id()
+        print(f'[id {id}] - pilot fuzz')
 
 
     def update_stats(self, info, state): # 실행 후 정보를 slave에서 받은 경우우
