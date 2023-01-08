@@ -159,6 +159,7 @@ class ServerPSO:
         self.wait = []
         self.state = []
         self.done = []
+        self.count = 0
         self.main_id = self.make_new()
         self.comm = comm
 
@@ -170,14 +171,19 @@ class ServerPSO:
             if time_total[i] > time_total[self.main_id]:
                 self.main_id = i
 
+    
+    def next_id(self, id):
+        return (id + 1) % self.count
+
 
     def make_new(self):
         self.pso.append(PSO())
         self.wait.append(0)
         self.done.append(0)
         self.state.append(ServerPSO.pilot)
-        self.debug(len(self.pso) - 1)
-        return len(self.pso) - 1
+        self.count += 1
+        self.debug(self.count - 1)
+        return self.count - 1
 
 
     def select_and_send(self, client, time, id=None):
@@ -193,7 +199,7 @@ class ServerPSO:
             if self.stage_pilot_fuzz(client, time, id):
                 return
                     
-        self.select_and_send(client, time, id + 1) # slave에 정보를 보내지 못했다면 다음 아이디에서 같은 과정을 반복
+        self.select_and_send(client, time, self.next_id(id)) # slave에 정보를 보내지 못했다면 다음 아이디에서 같은 과정을 반복
 
 
     def stage_core_fuzz(self, client, time, id):
