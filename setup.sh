@@ -1,11 +1,19 @@
 #!/bin/sh
 
+this="/kAFL-Customization"
 dirPath=`dirname $0`
+
+if [ "$dirPath" != *"$this" ]; then
+    echo "[-] wrong directory name. must be $this"
+    exit 1
+fi
+
 execDir=`pwd`
 cd $dirPath/..
 
 if [ "$execDir" != `pwd` ]; then
-    exit 0
+    echo "[-] execute on directory: `pwd`"
+    exit 2
 fi
 
 if [ -f "./kAFL-Fuzzer/kafl.ini" ]; then
