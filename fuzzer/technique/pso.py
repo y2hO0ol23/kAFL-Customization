@@ -159,7 +159,16 @@ class ServerPSO:
         self.wait = []
         self.state = []
         self.done = []
+        self.main_id = 0
         self.comm = comm
+
+
+    def select_main_id(self): # 현재까지 진행한 횟수가 가장 많은 pso space를 선택
+        time_total = [sum(pso.time) for pso in self.pso]
+        self.main_id = 0
+        for i in range(1, len(time_total)):
+            if time_total[i] > time_total[self.main_id]:
+                self.main_id = i
 
 
     def make_new(self):
@@ -168,11 +177,14 @@ class ServerPSO:
         self.done.append(0)
         self.state.append(ServerPSO.pilot)
         #self.debug(len(self.pso) - 1)
+        return len(self.pso) - 1
 
 
-    def select_and_send(self, client, time, id=0):
-        if id >= len(self.pso): # pso 공간이 부족하다면
-            self.make_new() # 새롭게 생성
+    def select_and_send(self, client, time, id=None):
+        if id == None:
+            id = self.main_id
+        elif id == self.main_id: # pso 공간이 부족하다면
+            id = self.make_new() # 새롭게 생성
 
         if self.state[id] == ServerPSO.core:
             if self.stage_core_fuzz(client, time, id):
@@ -191,7 +203,6 @@ class ServerPSO:
             self.wait[id] += 1 # 기다리고 있는 slave 갯수를 증가
             pso.time[PSO.get_core_num()] += time # 돌아가는 횟수를 미리 계산 후
             self.comm.send_pso_run(client, id, PSO.get_core_num(), pso.probability_now[pso.fitness]) # slave로 정보를 보넴
-            #print(f'[id{id}] core : {pso.time[PSO.get_core_num()]} / {PSO.period_core}')
             return True
 
         else:
@@ -210,7 +221,6 @@ class ServerPSO:
                 self.wait[id] += 1 # 기다리고 있는 slave 갯수를 증가
                 pso.time[tmp_swarm] += time # 돌아가는 횟수를 미리 계산 후
                 self.comm.send_pso_run(client, id, tmp_swarm, pso.probability_now[tmp_swarm]) # slave로 정보를 보넴
-                #print(f'[id{id}] swarm{tmp_swarm} : {pso.time[tmp_swarm]} / {PSO.period_pilot}')
                 return True
 
             else:
@@ -226,7 +236,6 @@ class ServerPSO:
         self.state[id] = ServerPSO.core # 코어 퍼징 상태로 바꿈
         self.pso[id].core_fuzz_init()
         #self.debug(id)
-        #print(f'[id{id}] start core fuzz')
     
 
     def to_pilot_fuzz(self, id):
@@ -235,7 +244,7 @@ class ServerPSO:
         self.pso[id].update_global() # pso 글로벌 값들을 바꿈
         #self.debug(id)
         self.pso[id].pilot_fuzz_init()
-        #print(f'[id{id}] start pilot fuzz')
+        self.select_main_id()
 
 
     def update_stats(self, info, state): # 실행 후 정보를 slave에서 받은 경우우
