@@ -168,10 +168,10 @@ class ServerPSO:
     
     
     def time_now(self):
-        time = int(time.time() - self.start_time)
-        s = time % 60
-        m = (time / 60) % 60
-        h = ((time / 60) / 60) % 60
+        t = int(time.time() - self.start_time)
+        s = t % 60
+        m = (t / 60) % 60
+        h = ((t / 60) / 60) % 60
         return f'%2d:%2d:%2d'%(h,m,s)
 
 
