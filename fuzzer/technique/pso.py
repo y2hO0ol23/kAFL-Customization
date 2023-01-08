@@ -235,9 +235,12 @@ class ServerPSO:
         if pso.time[self.swarm_now[id]] >= PSO.period_pilot:
             self.swarm_now[id] += 1
 
-        if not self.wait[id] and self.swarm_now[id] == PSO.get_core_num():
-            self.to_core_fuzz(id)
-            return self.stage_core_fuzz(client, time, id)
+        if self.swarm_now[id] == PSO.get_core_num():
+            if self.wait[id]:
+                return False
+            else:
+                self.to_core_fuzz(id)
+                return self.stage_core_fuzz(client, time, id)
         else:
             self.wait[id] += 1
             pso.time[self.swarm_now[id]] += time
