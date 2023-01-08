@@ -287,6 +287,7 @@ class ClientPSO:
             self.finds[i] = 0
 
     def init(self, msg):
+        print(msg)
         self.probability_now = msg["probability"]
         self.id = msg["info"]["id"]
         self.swarm_num = msg["info"]["swarm_num"]
