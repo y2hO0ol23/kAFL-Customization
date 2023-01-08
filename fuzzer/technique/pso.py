@@ -170,8 +170,8 @@ class ServerPSO:
     def time_now(self):
         t = int(time.time() - self.start_time)
         s = str(t % 60).rjust(2, '0')
-        m = str((t / 60) % 60).rjust(2, '0')
-        h = str(((t / 60) / 60) % 60).rjust(2, '0')
+        m = str((t // 60) % 60).rjust(2, '0')
+        h = str(((t // 60) // 60) % 60).rjust(2, '0')
         return f'{h}:{m}:{s}'
 
 
