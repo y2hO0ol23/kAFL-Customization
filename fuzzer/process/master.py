@@ -89,7 +89,7 @@ class MasterProcess:
                     # Slave execution done, update queue item + send new task
                     log_master("Received results, sending next task..")
                     
-                    if msg["result"] and msg["result"]["pso"]:
+                    if "pso" in msg.get("result",{}):
                         if msg["result"]["pso"] != 'init':
                             self.pso.update_stats(msg["result"]["pso"])
 
