@@ -159,7 +159,7 @@ class ServerPSO:
         self.wait = []
         self.state = []
         self.done = []
-        self.main_id = 0
+        self.main_id = self.make_new()
         self.comm = comm
 
 
@@ -176,7 +176,7 @@ class ServerPSO:
         self.wait.append(0)
         self.done.append(0)
         self.state.append(ServerPSO.pilot)
-        #self.debug(len(self.pso) - 1)
+        self.debug(len(self.pso) - 1)
         return len(self.pso) - 1
 
 
@@ -235,14 +235,14 @@ class ServerPSO:
     def to_core_fuzz(self, id):
         self.state[id] = ServerPSO.core # 코어 퍼징 상태로 바꿈
         self.pso[id].core_fuzz_init()
-        #self.debug(id)
+        self.debug(id)
     
 
     def to_pilot_fuzz(self, id):
         self.state[id] = ServerPSO.pilot # 퍼징 상태를 바꿈
         self.done[id] = 0
         self.pso[id].update_global() # pso 글로벌 값들을 바꿈
-        #self.debug(id)
+        self.debug(id)
         self.pso[id].pilot_fuzz_init()
         self.select_main_id()
 
