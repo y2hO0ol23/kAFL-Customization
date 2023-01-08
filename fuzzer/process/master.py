@@ -88,18 +88,19 @@ class MasterProcess:
                 if msg["type"] == MSG_NODE_DONE:
                     # Slave execution done, update queue item + send new task
                     log_master("Received results, sending next task..")
+                    
+                    if msg["result"] and msg["result"]["pso"]:
+                        if msg["result"]["pso"] != 'init':
+                            self.pso.update_stats(msg["result"]["pso"])
+
+                        perf = msg["result"].get("performance", 0)
+                        havoc_amount = havoc.havoc_range(FuzzingStateLogic.HAVOC_MULTIPLIER / perf)
+                        total_amount = havoc_amount + 2*havoc_amount
+                        msg["result"]["pso"] = self.pso.select(total_amount)
+                        
+                        print(msg["result"]["pso"])
+
                     if msg["node_id"]:
-                        if msg["result"]["pso"]:
-                            if msg["result"]["pso"] != 'init':
-                                self.pso.update_stats(msg["result"]["pso"])
-
-                            perf = msg["result"].get("performance", 0)
-                            havoc_amount = havoc.havoc_range(FuzzingStateLogic.HAVOC_MULTIPLIER / perf)
-                            total_amount = havoc_amount + 2*havoc_amount
-                            msg["result"]["pso"] = self.pso.select(total_amount)
-                            
-                            print(msg["result"]["pso"])
-
                         self.queue.update_node_results(msg["node_id"], msg["results"], msg["new_payload"])
                     self.send_next_task(conn)
                 elif msg["type"] == MSG_NEW_INPUT:
