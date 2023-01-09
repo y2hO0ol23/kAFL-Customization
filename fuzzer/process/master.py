@@ -76,7 +76,6 @@ class MasterProcess:
                 node.node_struct["pso"] = self.pso.select(total_iter)
                 
                 node.update_file(write=True)
-                print(node.node_struct)
                 
             return self.comm.send_node(conn, {"type": "node", "nid": node.get_id()})
 
