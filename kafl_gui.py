@@ -293,7 +293,7 @@ class GuiDrawer:
                 for i in range(len(d.stats['pso']['x_now'])-1):
                     v = " ".join(d.pso_x_now(i))
                     if len(v) + 10 > 78:
-                        v = v[:65] + '...'
+                        v = v[:64] + '...'
                     self.gui.print_info_line([(78, 'swarm %2d'%i, v)])
 
         i = self.current_slave_id
@@ -722,7 +722,7 @@ class GuiData:
     def pso_x_now(self, swarm):
         li = self.stats["pso"]["x_now"][swarm]
         s = sum(li)
-        ret = [("%.2f"%(v/s*100)).rjust(5, ' ') for v in li]
+        ret = [("%.1f"%(v/s*100)).rjust(4, ' ') for v in li]
         return ret
 
 def main(stdscr):
