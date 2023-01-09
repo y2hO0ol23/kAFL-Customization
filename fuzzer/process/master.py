@@ -70,7 +70,7 @@ class MasterProcess:
         if node:
             met = node.node_struct
             if "pso" in met:
-                print(met["pso"])
+                print(met)
                 if met["pso"] != 'init':
                     self.pso.update_stats(met["pso"])
 
