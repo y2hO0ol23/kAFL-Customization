@@ -290,7 +290,7 @@ class GuiDrawer:
                                       (16, 'cycles', '%4d'%d.pso_cycles())], prefix="PSO: ")
             if 'x_now' in d.stats['pso']:
                 self.gui.print_thin_line()
-                for i in range(len(d.stats['pso']['x_now'])):
+                for i in range(len(d.stats['pso']['x_now'])-1):
                     v = " ".join(d.pso_x_now(i))
                     if len(v) + 10 > 78:
                         v = v[:65] + '...'
@@ -722,7 +722,7 @@ class GuiData:
     def pso_x_now(self, swarm):
         li = self.stats["pso"]["x_now"][swarm]
         s = sum(li)
-        ret = [f'{s}'] + ["%.2f"%v for v in li]
+        ret = ["%.2f"%(v/s*100) for v in li]
         return ret
 
 def main(stdscr):
