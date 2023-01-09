@@ -704,17 +704,14 @@ class GuiData:
         else:
             return None
             
-    def pso_state(self, id):
-        return self.stats["pso"][id]["state"]
+    def pso_state(self):
+        return self.stats["pso"]["state"]
     
-    def pso_progress(self, id):
-        return self.stats["pso"][id]["progress"]
+    def pso_progress(self):
+        return self.stats["pso"]["progress"]
     
-    def pso_cycles(self, id):
-        return self.stats["pso"][id]["cycles"]
-        
-    def pso_using(self):
-        return self.stats["pso"]['using']
+    def pso_cycles(self):
+        return self.stats["pso"]["cycles"]
 
 def main(stdscr):
     gui = GuiDrawer(sys.argv[1], stdscr)
