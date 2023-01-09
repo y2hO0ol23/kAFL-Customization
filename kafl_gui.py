@@ -719,7 +719,7 @@ class GuiData:
     def pso_cycles(self, id):
         return self.stats["pso"][id]["cycles"]
         
-    def pso_main_id(self, id):
+    def pso_main_id(self):
         return self.stats["pso"]['main_id']
 
 def main(stdscr):
