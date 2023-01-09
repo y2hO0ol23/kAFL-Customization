@@ -1,5 +1,5 @@
 from fuzzer.technique.havoc_handler import *
-import random
+from fuzzer.technique.helper import rand
 import time
 
 class PSO:
@@ -30,7 +30,7 @@ class PSO:
     
     @staticmethod
     def rand(v = 1):
-        return random.random() * v
+        return rand.int(1000) * 0.001 * v
 
     @staticmethod
     def sat(val, st, ed):
