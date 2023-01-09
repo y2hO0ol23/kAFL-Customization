@@ -165,7 +165,7 @@ class ServerPSO:
 
     def scheduling(self): # 현재까지 진행한 횟수가 가장 많은 pso space를 선택
         self.order = [(i, sum(pso.time)) for i, pso in enumerate(self.pso)]
-        self.order.sort(key=lambda x: (self.swarm_now[x[0]], x[1]))
+        self.order.sort(key=lambda x: (-self.swarm_now[x[0]], -x[1]))
         
         self.statistics.pso_update(None, {"main_id": self.order[0][0]})
 
