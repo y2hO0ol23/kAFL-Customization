@@ -76,7 +76,7 @@ class MasterProcess:
                 perf = met["results"].get("performance", 0)
                 havoc_amount = havoc.havoc_range(FuzzingStateLogic.HAVOC_MULTIPLIER / perf)
                 total_amount = havoc_amount + 2*havoc_amount
-                met["results"]["pso"] = self.pso.select(total_amount)
+                node.node_struct["results"]["pso"] = self.pso.select(total_amount)
 
                 node.update_file(write=True)
                 
