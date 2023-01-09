@@ -186,7 +186,7 @@ class ServerPSO:
     def select(self, time, idx=0):
         if idx == len(self.order): # pso 공간이 부족하다면
             idx = self.make_new() # 새롭게 생성
-        id = self.order[idx]
+        id = self.order[idx][0]
 
         if self.state[id] == ServerPSO.core:
             res = self.stage_core_fuzz(time, id)
