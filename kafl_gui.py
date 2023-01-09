@@ -285,7 +285,7 @@ class GuiDrawer:
 
         if len(d.stats['pso']) > 0:
             self.gui.print_thin_line()
-            self.gui.print_info_line([(77, 'PSO Stats', '')])
+            self.gui.print_info_line([(76, 'PSO Stats', '')])
             for id in range(len(d.stats['pso'])):
                 self.gui.print_info_line([(10, 'id', str(id)),
                                           (24, 'state', d.pso_state(id)),
