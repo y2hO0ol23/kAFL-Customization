@@ -289,8 +289,8 @@ class GuiDrawer:
             for id in range(len(d.stats['pso'])):
                 self.gui.print_info_line([(7, ' id', '%2d'%id),
                                           (18, 'state', d.pso_state(id)),
-                                          (22, 'progress', d.pso_progress(id)),
-                                          (18, 'cycles', '%4d'%d.pso_cycles(id))])
+                                          (23, 'progress', d.pso_progress(id)),
+                                          (16, 'cycles', '%4d'%d.pso_cycles(id))])
 
 
         i = self.current_slave_id
