@@ -70,8 +70,8 @@ class MasterProcess:
         if node:
             met = node.node_struct
             if "pso" in met.get("results", {}):
+                print(met["results"]["pso"])
                 if met["results"]["pso"] != 'init':
-                    print(met["results"]["pso"])
                     self.pso.update_stats(met["results"]["pso"])
 
                 perf = met["results"].get("performance", 0)
