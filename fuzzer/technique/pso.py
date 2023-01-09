@@ -266,20 +266,18 @@ class ClientPSO:
         self.cycles = {}
         self.cycles_old = {}
         self.finds = {}
+
     
-    def reset(self):
+    def init(self, met):
         self.total_hit = 0
         for i in range(PSO.get_handler_num()):
             self.cycles[i] = 0
             self.cycles_old[i] = 0
             self.finds[i] = 0
-
-    
-    def init(self, met):
+            
         self.probability_now = met["probability"]
         self.id = met["info"]["id"]
         self.swarm_num = met["info"]["swarm_num"]
-        self.reset()
 
 
     def select_and_run_handler(self, data):
