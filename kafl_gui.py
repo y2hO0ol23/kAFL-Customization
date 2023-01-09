@@ -718,6 +718,9 @@ class GuiData:
     
     def pso_cycles(self, id):
         return self.stats["pso"][id]["cycles"]
+        
+    def pso_main_id(self, id):
+        return self.stats["pso"]['main_id']
 
 def main(stdscr):
     gui = GuiDrawer(sys.argv[1], stdscr)
