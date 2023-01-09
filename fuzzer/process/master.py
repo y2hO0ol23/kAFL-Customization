@@ -68,9 +68,8 @@ class MasterProcess:
         # Process items from queue..
         node = self.queue.get_next()
         if node:
-            print(node.node_struct)
             met = node.node_struct
-            if "pso" in met["results"]:
+            if "pso" in met.get("results", {}):
                 if met["results"]["pso"] != 'init':
                     self.pso.update_stats(met["results"]["pso"])
 
