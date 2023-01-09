@@ -159,22 +159,15 @@ class ServerPSO:
         self.state = []
         self.swarm_now = []
         self.count = 0
-        self.main_id = self.make_new()
+        self.order = []
         self.start_time = time.time()
 
 
-    def select_main_id(self): # 현재까지 진행한 횟수가 가장 많은 pso space를 선택
-        time_total = [sum(pso.time) for pso in self.pso]
-        self.main_id = 0
-        for i in range(1, len(time_total)):
-            if time_total[i] > time_total[self.main_id]:
-                self.main_id = i
+    def scheduling(self): # 현재까지 진행한 횟수가 가장 많은 pso space를 선택
+        self.order = [(i, sum(pso.time)) for i, pso in enumerate(self.pso)]
+        self.order.sort(key=lambda x: x[1])
         
-        self.statistics.pso_update(None, {"main_id": self.main_id})
-
-    
-    def next_id(self, id):
-        return (id + 1) % self.count
+        self.statistics.pso_update(None, {"main_id": self.order[0]})
 
 
     def make_new(self):
@@ -183,16 +176,17 @@ class ServerPSO:
         self.swarm_now.append(0)
         self.state.append(ServerPSO.pilot)
         self.count += 1
-        
-        self.statistics.pso_update(self.count-1, {"state": f"pilot 0/{PSO.swarm_num}", "progress": f"0/{PSO.period_core}"})
-        return self.count - 1
+
+        new = self.count-1
+        self.order.append(new)
+        self.statistics.pso_update(new, {"state": f"pilot 0/{PSO.swarm_num}", "progress": f"0/{PSO.period_core}"})
+        return new
 
 
-    def select(self, time, id=None):
-        if id == None:
-            id = self.main_id
-        elif id == self.main_id: # pso 공간이 부족하다면
-            id = self.make_new() # 새롭게 생성
+    def select(self, time, idx=0):
+        if idx == len(self.order): # pso 공간이 부족하다면
+            idx = self.make_new() # 새롭게 생성
+        id = self.order[idx]
 
         if self.state[id] == ServerPSO.core:
             res = self.stage_core_fuzz(time, id)
@@ -200,7 +194,7 @@ class ServerPSO:
             res = self.stage_pilot_fuzz(time, id)
         
         if res != None: return res
-        return self.select(time, self.next_id(id)) # slave에 정보를 보내지 못했다면 다음 아이디에서 같은 과정을 반복
+        return self.select(time, idx+1) # slave에 정보를 보내지 못했다면 다음 아이디에서 같은 과정을 반복
 
 
     def stage_core_fuzz(self, time, id):
@@ -254,7 +248,7 @@ class ServerPSO:
         self.swarm_now[id] = 0
         self.pso[id].update_global() # pso 글로벌 값들을 바꿈
         self.pso[id].pilot_fuzz_init()
-        self.select_main_id()
+        self.scheduling()
         self.statistics.pso_update(id, {"state": f"pilot 0/{PSO.swarm_num}", "cycles": 1})
 
 

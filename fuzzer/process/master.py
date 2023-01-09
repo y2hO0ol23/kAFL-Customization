@@ -98,6 +98,7 @@ class MasterProcess:
                     log_master("Received results, sending next task..")
                     if msg["results"].get("pso", None):
                         self.pso.update_stats(msg["results"]["pso"])
+                        msg["results"]["pso"] = None
                     if msg["node_id"]:
                         self.queue.update_node_results(msg["node_id"], msg["results"], msg["new_payload"])
                     self.send_next_task(conn)
