@@ -57,13 +57,10 @@ class PSO:
         total = sum(self.x_now[tmp_swarm])
         self.x_now[tmp_swarm] = [v / total for v in self.x_now[tmp_swarm]]
 
-        self.probability_now[tmp_swarm] = [0]
+        self.probability_now[tmp_swarm][0] = self.x_now[tmp_swarm][0]
 
-        for i in range(PSO.get_handler_num()):
-            value = self.probability_now[tmp_swarm][i] + self.x_now[tmp_swarm][i]
-            self.probability_now[tmp_swarm].append(value)
-    
-        del self.probability_now[tmp_swarm][0]
+        for i in range(1, PSO.get_handler_num()):
+            self.probability_now[tmp_swarm][i] = self.probability_now[tmp_swarm][i - 1] + self.x_now[tmp_swarm][i]
 
 
     def __init__(self):
