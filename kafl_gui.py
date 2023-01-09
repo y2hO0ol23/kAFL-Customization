@@ -287,8 +287,8 @@ class GuiDrawer:
             self.gui.print_thin_line()
             self.gui.print_info_line([(15, 'PSO Stats', '')])
             for id in range(len(d.stats['pso'])):
-                self.gui.print_info_line([(20, 'state', d.pso_state(id)),
-                                          (20, 'progress', d.pso_progress(id))],
+                self.gui.print_info_line([(25, 'state', d.pso_state(id)),
+                                          (30, 'progress', d.pso_progress(id))],
                                           prefix=" id %d"%id)
 
 
