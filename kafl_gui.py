@@ -293,7 +293,7 @@ class GuiDrawer:
                 for i in range(len(d.stats['pso']['x_now'])-1):
                     v = '┃' +'swarm%2d: '%i + "% ".join(d.pso_x_now(i)[:-4]) + '%'
                     if len(v) <= 78:
-                        v += ' ┃'
+                        v = v.ljust(79, ' ') + '┃'
                     self.gui.stdscr.addstr(self.gui.y, 0, v)
                     self.gui.y += 1
 
