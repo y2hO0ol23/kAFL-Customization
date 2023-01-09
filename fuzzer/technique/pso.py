@@ -71,6 +71,7 @@ class PSO:
         self.v_now = PSO.list_init(0.1)
         self.probability_now = PSO.list_init()
         self.swarm_fitness = [0] * PSO.swarm_num
+        self.fitness = None
 
         self.finds = PSO.list_init()
         self.cycles = PSO.list_init()
@@ -135,7 +136,7 @@ class PSO:
         
         finds_total = [0 for _ in range(PSO.get_handler_num())]
         for i in range(PSO.get_handler_num()):
-            for tmp_swarm in range(PSO.swarm_num):
+            for tmp_swarm in range(PSO.get_swarm_num()):
                 finds_total[i] += self.finds_total[tmp_swarm][i]
         
         total = sum(finds_total)
@@ -146,6 +147,13 @@ class PSO:
 
         for tmp_swarm in range(PSO.swarm_num):
             self.update_probability(tmp_swarm)
+            
+    def core_fuzz_end(self):
+        for i in range(PSO.get_handler_num()):
+            self.finds_total[PSO.get_core_num()][i] += self.finds[PSO.get_core_num()][i]
+
+        self.update_global() # pso 글로벌 값들을 바꿈
+        self.pilot_fuzz_init()
 
 
 class ServerPSO:
@@ -154,112 +162,89 @@ class ServerPSO:
 
     def __init__(self, statistics):
         self.statistics = statistics
-        self.pso = []
-        self.wait = []
-        self.state = []
-        self.swarm_now = []
-        self.count = 0
-        self.order = []
+        self.pso = PSO()
+        self.wait = 0
+        self.state = ServerPSO.pilot
+        self.swarm_now = 0
         self.start_time = time.time()
 
 
-    def scheduling(self): # 현재까지 진행한 횟수가 가장 많은 pso space를 선택
-        self.order = [(i+1, sum(pso.time)) for i, pso in enumerate(self.pso[1:])]
-        self.order.sort(key=lambda x: (-self.swarm_now[x[0]], -x[1]))
-        self.order = [(0,)] + self.order
-
-
-    def make_new(self):
-        self.pso.append(PSO())
-        self.wait.append(0)
-        self.swarm_now.append(0)
-        self.state.append(ServerPSO.pilot)
-        self.count += 1
-
-        new = self.count-1
-        self.order.append((new,))
-        self.statistics.pso_update(new, {"state": f"pilot 0/{PSO.swarm_num}", "progress": f"0/{PSO.period_core}"})
-        return new
-
-
-    def select(self, time, idx=0):
-        if idx == len(self.order): # pso 공간이 부족하다면
-            idx = self.make_new() # 새롭게 생성
-        id = self.order[idx][0]
-
-        if self.state[id] == ServerPSO.core:
-            res = self.stage_core_fuzz(time, id)
+    def select(self, time):
+        if self.state == ServerPSO.core:
+            res = self.stage_core_fuzz(time)
         else:
-            res = self.stage_pilot_fuzz(time, id)
+            res = self.stage_pilot_fuzz(time)
         
-        if res != None: 
-            self.statistics.pso_update(None, {"using": id})
-            return res
-        return self.select(time, idx+1) # slave에 정보를 보내지 못했다면 다음 아이디에서 같은 과정을 반복
+        if res == None: 
+            res = self.stage_assist_fuzz()
+
+        return res
+        
+    def stage_assist_fuzz(self):
+        prob = [i for i in range(PSO.get_handler_num())]
+        if self.pso.fitness != None:
+            prob = self.pso.probability_now[self.pso.fitness]
+        
+        return {"info": {"swarm_now": "assist"}, "probability": prob}
 
 
-    def stage_core_fuzz(self, time, id):
-        pso:PSO = self.pso[id]
-
-        if pso.time[PSO.get_core_num()] < PSO.period_core: # 실행 목표를 달성하지 못했다면
-            self.wait[id] += 1 # 기다리고 있는 slave 갯수를 증가
-            pso.time[PSO.get_core_num()] += time # 돌아가는 횟수를 미리 계산 후
-            self.statistics.pso_update(id, {"progress": f"{pso.time[PSO.get_core_num()]}/{PSO.period_core}"})
-            return {"info": {"id": id, "swarm_num": PSO.get_core_num()}, "probability": pso.probability_now[pso.fitness]}
+    def stage_core_fuzz(self, time):
+        if self.pso.time[PSO.get_core_num()] < PSO.period_core: # 실행 목표를 달성하지 못했다면
+            self.wait += 1 # 기다리고 있는 slave 갯수를 증가
+            self.pso.time[PSO.get_core_num()] += time # 돌아가는 횟수를 미리 계산 후
+            self.statistics.pso_update({"progress": f"{self.pso.time[PSO.get_core_num()]}/{PSO.period_core}"})
+            return {"info": {"swarm_now": PSO.get_core_num()}, "probability": self.pso.probability_now[self.pso.fitness]}
 
         else:
-            if not self.wait[id]:
-                self.to_pilot_fuzz(id)
-                return self.select(time)
+            if not self.wait:
+                self.to_pilot_fuzz()
+                return self.stage_pilot_fuzz()
         
         return None
 
 
-    def stage_pilot_fuzz(self, time, id):
-        pso:PSO = self.pso[id]
+    def stage_pilot_fuzz(self, time):
+        if self.pso.time[self.swarm_now] >= PSO.period_pilot:
+            self.swarm_now += 1
 
-        if pso.time[self.swarm_now[id]] >= PSO.period_pilot:
-            self.swarm_now[id] += 1
-
-            if self.swarm_now[id] != PSO.get_core_num():
-                self.statistics.pso_update(id, {"state": f"pilot {self.swarm_now[id]}/{PSO.swarm_num}"})
+            if self.swarm_now != PSO.get_core_num():
+                self.statistics.pso_update({"state": f"pilot {self.swarm_now}/{PSO.swarm_num}"})
         
-        swarm_now = self.swarm_now[id]
-        if swarm_now == PSO.get_core_num():
-            if self.wait[id]:
+        if self.swarm_now == PSO.get_core_num():
+            if self.wait:
                 return None
             else:
-                self.to_core_fuzz(id)
-                return self.stage_core_fuzz(time, id)
+                self.to_core_fuzz()
+                return self.stage_core_fuzz(time)
         else:
-            self.wait[id] += 1
-            pso.time[swarm_now] += time
-            self.statistics.pso_update(id, {"progress": f"{pso.time[swarm_now]}/{PSO.period_pilot}"})
-            return {"info": {"id": id, "swarm_num": swarm_now}, "probability": pso.probability_now[swarm_now]}
+            self.wait += 1
+            self.pso.time[self.swarm_now] += time
+            self.statistics.pso_update({"progress": f"{self.pso.time[self.swarm_now]}/{PSO.period_pilot}"})
+            return {"info": {"swarm_now": self.swarm_now}, "probability": self.pso.probability_now[self.swarm_now]}
 
 
-    def to_core_fuzz(self, id):
-        self.state[id] = ServerPSO.core # 코어 퍼징 상태로 바꿈
-        self.pso[id].core_fuzz_init()
-        self.statistics.pso_update(id, {"state": f"core {PSO.swarm_num}/{PSO.swarm_num}"})
+    def to_core_fuzz(self):
+        self.state = ServerPSO.core # 코어 퍼징 상태로 바꿈
+        self.pso.core_fuzz_init()
+        self.statistics.pso_update({"state": f"core {PSO.swarm_num}/{PSO.swarm_num}"})
     
 
-    def to_pilot_fuzz(self, id):
-        self.state[id] = ServerPSO.pilot # 퍼징 상태를 바꿈
-        self.swarm_now[id] = 0
-        self.pso[id].update_global() # pso 글로벌 값들을 바꿈
-        self.pso[id].pilot_fuzz_init()
-        self.scheduling()
-        self.statistics.pso_update(id, {"state": f"pilot 0/{PSO.swarm_num}", "cycles": 1})
+    def to_pilot_fuzz(self):
+        self.state = ServerPSO.pilot # 퍼징 상태를 바꿈
+        self.swarm_now = 0
+        self.pso.core_fuzz_end()
+        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "cycles": 1})
 
 
     def update_stats(self, data): # 실행 후 정보를 slave에서 받은 경우우
-        id = data['info']['id']
         swarm_num = data['info']['swarm_num']
 
-        self.wait[id] -= 1 # 기다리고 있는 slave 갯수를 감소
-        self.pso[id].update(swarm_num, data['state']) # 해당 정보로 pso 변수들을 업데이트 함
-    
+        if swarm_num == 'assist':
+            for i in range(PSO.get_handler_num()):
+                self.pso.finds_total[PSO.get_core_num()][i] += data['state']['finds'][i]
+        else:
+            self.wait -= 1 # 기다리고 있는 slave 갯수를 감소
+            self.pso.update(swarm_num, data['state']) # 해당 정보로 pso 변수들을 업데이트 함
 
 
 class ClientPSO:
@@ -277,8 +262,7 @@ class ClientPSO:
             self.finds[i] = 0
             
         self.probability_now = met["probability"]
-        self.id = met["info"]["id"]
-        self.swarm_num = met["info"]["swarm_num"]
+        self.swarm_now = met["info"]["swarm_now"]
 
 
     def select_and_run_handler(self, data):
@@ -308,5 +292,5 @@ class ClientPSO:
 
 
     def result(self):
-        return {"info": {"id": self.id, "swarm_num": self.swarm_num}, "state": {"total_hit": self.total_hit, "finds": self.finds, "cycles": self.cycles}}
+        return {"info": {"swarm_now": self.swarm_now}, "state": {"total_hit": self.total_hit, "finds": self.finds, "cycles": self.cycles}}
 

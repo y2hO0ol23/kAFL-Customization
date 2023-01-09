@@ -44,7 +44,9 @@ class MasterStatistics:
                     },
                 "num_slaves": self.num_slaves,
                 "pso": {
-                    'using':0
+                    "state": "N/A", 
+                    "progress": "N/A", 
+                    "cycles":0 
                     }
                 }
 
@@ -81,19 +83,13 @@ class MasterStatistics:
         self.data["max_level"] = max(node.get_level(), self.data["max_level"])
 
 
-    def pso_update(self, id, data):
-        if id != None and id not in self.data["pso"]:
-            self.data["pso"][id] = { "state": "N/A", "progress": "N/A", "cycles":0 }
-        
+    def pso_update(self, data):
         if "state" in data:
-            self.data["pso"][id]["state"] = data["state"]
+            self.data["pso"]["state"] = data["state"]
         if "progress" in data:
-            self.data["pso"][id]["progress"] = data["progress"]
+            self.data["pso"]["progress"] = data["progress"]
         if "cycles" in data:
-            self.data["pso"][id]["cycles"] += data["cycles"]
-        if "using" in data:
-            self.data["pso"]["using"] = data["using"]
-
+            self.data["pso"]["cycles"] += data["cycles"]
     
 
     def event_node_remove_fav_bit(self, node):
