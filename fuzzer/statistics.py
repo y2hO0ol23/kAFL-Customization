@@ -84,9 +84,9 @@ class MasterStatistics:
             self.data["pso"].append({ "state": "N/A", "progress": "N/A" })
         
         if "state" in data:
-            self.data["pso"]["state"] = data["state"]
+            self.data["pso"][id]["state"] = data["state"]
         if "progress" in data:
-            self.data["pso"]["state"] = data["now"]
+            self.data["pso"][id]["state"] = data["now"]
     
 
     def event_node_remove_fav_bit(self, node):
