@@ -68,6 +68,17 @@ class MasterProcess:
         # Process items from queue..
         node = self.queue.get_next()
         if node:
+            print(node.node_struct)
+            """
+            if "pso" in msg.get("results",{}):
+                if msg["results"]["pso"] != 'init':
+                    self.pso.update_stats(msg["results"]["pso"])
+
+                perf = msg["results"].get("performance", 0)
+                havoc_amount = havoc.havoc_range(FuzzingStateLogic.HAVOC_MULTIPLIER / perf)
+                total_amount = havoc_amount + 2*havoc_amount
+                msg["results"]["pso"] = self.pso.select(total_amount)
+            """
             return self.comm.send_node(conn, {"type": "node", "nid": node.get_id()})
 
         # No work in queue. Tell slave to wait a little or attempt blind fuzzing.
@@ -87,16 +98,6 @@ class MasterProcess:
                 if msg["type"] == MSG_NODE_DONE:
                     # Slave execution done, update queue item + send new task
                     log_master("Received results, sending next task..")
-                    
-                    if "pso" in msg.get("results",{}):
-                        if msg["results"]["pso"] != 'init':
-                            self.pso.update_stats(msg["results"]["pso"])
-
-                        perf = msg["results"].get("performance", 0)
-                        havoc_amount = havoc.havoc_range(FuzzingStateLogic.HAVOC_MULTIPLIER / perf)
-                        total_amount = havoc_amount + 2*havoc_amount
-                        msg["results"]["pso"] = self.pso.select(total_amount)
-
                     if msg["node_id"]:
                         self.queue.update_node_results(msg["node_id"], msg["results"], msg["new_payload"])
                     self.send_next_task(conn)
