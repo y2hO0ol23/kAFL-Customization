@@ -127,22 +127,22 @@ class SlaveProcess:
             return
 
         log_slave("Started qemu", self.slave_id)
-        try:
-            while True:
+        while True:
+            try:
                 msg = self.conn.recv()
+            except ConnectionResetError:
+                log_slave("Lost connection to master. Shutting down.", self.slave_id)
+                return
 
-                if msg["type"] == MSG_RUN_NODE:
-                    self.handle_node(msg)
-                elif msg["type"] == MSG_IMPORT:
-                    self.handle_import(msg)
-                elif msg["type"] == MSG_BUSY:
-                    self.handle_busy()
-                else:
-                    raise ValueError("Unknown message type {}".format(msg))
-                
-        except ConnectionResetError:
-            log_slave("Lost connection to master. Shutting down.", self.slave_id)
-            return
+            if msg["type"] == MSG_RUN_NODE:
+                self.handle_node(msg)
+            elif msg["type"] == MSG_IMPORT:
+                self.handle_import(msg)
+            elif msg["type"] == MSG_BUSY:
+                self.handle_busy()
+            else:
+                raise ValueError("Unknown message type {}".format(msg))
+
 
     def quick_validate(self, data, old_res, quiet=False):
         # Validate in persistent mode. Faster but problematic for very funky targets

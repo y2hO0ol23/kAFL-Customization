@@ -209,7 +209,7 @@ class ServerPSO:
         else:
             if not self.wait[id]:
                 self.to_pilot_fuzz(id)
-                return self.stage_pilot_fuzz(time, id)
+                return self.select(time)
         
         return None
 
