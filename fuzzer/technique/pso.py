@@ -188,7 +188,6 @@ class ServerPSO:
         self.swarm_now.append(0)
         self.state.append(ServerPSO.pilot)
         self.count += 1
-        print(f"new id created. id {self.count - 1}")
         return self.count - 1
 
 
@@ -213,7 +212,7 @@ class ServerPSO:
         if pso.time[PSO.get_core_num()] < PSO.period_core: # 실행 목표를 달성하지 못했다면
             self.wait[id] += 1 # 기다리고 있는 slave 갯수를 증가
             pso.time[PSO.get_core_num()] += time # 돌아가는 횟수를 미리 계산 후
-            print(f'[id {id} | core] {pso.time[PSO.get_core_num()]}/{PSO.period_core}')
+            #print(f'[id {id} | core] {pso.time[PSO.get_core_num()]}/{PSO.period_core}')
             return {"info": {"id": id, "swarm_num": PSO.get_core_num()}, "probability": pso.probability_now[pso.fitness]}
 
         else:
@@ -233,7 +232,7 @@ class ServerPSO:
         swarm_now = self.swarm_now[id]
         if swarm_now == PSO.get_core_num():
             if self.wait[id]:
-                print(f'[id {id} | core] wait {self.wait[id]}')
+                #print(f'[id {id} | core] wait {self.wait[id]}')
                 return None
             else:
                 self.to_core_fuzz(id)
@@ -241,7 +240,7 @@ class ServerPSO:
         else:
             self.wait[id] += 1
             pso.time[swarm_now] += time
-            print(f'[id {id} | swarm {swarm_now}] {pso.time[swarm_now]}/{PSO.period_pilot}')
+            #print(f'[id {id} | swarm {swarm_now}] {pso.time[swarm_now]}/{PSO.period_pilot}')
             return {"info": {"id": id, "swarm_num": swarm_now}, "probability": pso.probability_now[swarm_now]}
 
 
