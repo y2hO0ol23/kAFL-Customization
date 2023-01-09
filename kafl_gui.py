@@ -288,9 +288,7 @@ class GuiDrawer:
             self.gui.print_info_line([(76, 'PSO Stats', '')])
             for id in range(len(d.stats['pso'])-1):
                 hl = ' '
-                if id == 0:
-                    hl = '#'
-                if id == d.pso_main_id():
+                if id == d.pso_using():
                     hl = '>'
                 self.gui.print_info_line([(7, '%c id'%hl, '%2d'%id),
                                           (18, 'state', d.pso_state(id)),
@@ -721,8 +719,8 @@ class GuiData:
     def pso_cycles(self, id):
         return self.stats["pso"][id]["cycles"]
         
-    def pso_main_id(self):
-        return self.stats["pso"]['main_id']
+    def pso_using(self):
+        return self.stats["pso"]['using']
 
 def main(stdscr):
     gui = GuiDrawer(sys.argv[1], stdscr)

@@ -167,8 +167,6 @@ class ServerPSO:
         self.order = [(i+1, sum(pso.time)) for i, pso in enumerate(self.pso[1:])]
         self.order.sort(key=lambda x: (-self.swarm_now[x[0]], -x[1]))
         self.order = [(0,)] + self.order
-        
-        self.statistics.pso_update(None, {"main_id": self.order[1][0]})
 
 
     def make_new(self):
@@ -194,7 +192,9 @@ class ServerPSO:
         else:
             res = self.stage_pilot_fuzz(time, id)
         
-        if res != None: return res
+        if res != None: 
+            self.statistics.pso_update(None, {"using": id})
+            return res
         return self.select(time, idx+1) # slave에 정보를 보내지 못했다면 다음 아이디에서 같은 과정을 반복
 
 

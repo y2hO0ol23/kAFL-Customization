@@ -44,7 +44,7 @@ class MasterStatistics:
                     },
                 "num_slaves": self.num_slaves,
                 "pso": {
-                    'main_id':1
+                    'using':0
                     }
                 }
 
@@ -91,8 +91,8 @@ class MasterStatistics:
             self.data["pso"][id]["progress"] = data["progress"]
         if "cycles" in data:
             self.data["pso"][id]["cycles"] += data["cycles"]
-        if "main_id" in data:
-            self.data["pso"]["main_id"] = data["main_id"]
+        if "using" in data:
+            self.data["pso"]["using"] = data["using"]
 
     
 
