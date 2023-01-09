@@ -153,6 +153,7 @@ class ServerPSO:
     core = 1
 
     def __init__(self, statistics):
+        self.statistics = statistics
         self.pso = []
         self.wait = []
         self.state = []
@@ -160,8 +161,6 @@ class ServerPSO:
         self.count = 0
         self.main_id = self.make_new()
         self.start_time = time.time()
-
-        self.statistics = statistics
 
 
     def select_main_id(self): # 현재까지 진행한 횟수가 가장 많은 pso space를 선택
