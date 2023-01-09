@@ -237,14 +237,14 @@ class ServerPSO:
 
 
     def update_stats(self, data): # 실행 후 정보를 slave에서 받은 경우우
-        swarm_num = data['info']['swarm_num']
+        swarm_now = data['info']['swarm_now']
 
-        if swarm_num == 'assist':
+        if swarm_now == 'assist':
             for i in range(PSO.get_handler_num()):
                 self.pso.finds_total[PSO.get_core_num()][i] += data['state']['finds'][i]
         else:
             self.wait -= 1 # 기다리고 있는 slave 갯수를 감소
-            self.pso.update(swarm_num, data['state']) # 해당 정보로 pso 변수들을 업데이트 함
+            self.pso.update(swarm_now, data['state']) # 해당 정보로 pso 변수들을 업데이트 함
 
 
 class ClientPSO:
