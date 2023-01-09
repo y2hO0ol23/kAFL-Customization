@@ -288,8 +288,9 @@ class GuiDrawer:
             self.gui.print_info_line([(76, 'PSO Stats', '')])
             for id in range(len(d.stats['pso'])):
                 self.gui.print_info_line([(10, ' id', str(id)),
-                                          (24, 'state', d.pso_state(id)),
-                                          (34, 'progress', d.pso_progress(id))])
+                                          (15, 'state', d.pso_state(id)),
+                                          (25, 'progress', d.pso_progress(id)),
+                                          (15, 'cycles', d.pso_cycles(id))])
 
 
         i = self.current_slave_id
@@ -711,6 +712,9 @@ class GuiData:
     
     def pso_progress(self, id):
         return self.stats["pso"][id]["progress"]
+    
+    def pso_cycles(self, id):
+        return str(self.stats["pso"][id]["cycles"])
 
 def main(stdscr):
     gui = GuiDrawer(sys.argv[1], stdscr)

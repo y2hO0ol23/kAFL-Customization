@@ -253,7 +253,7 @@ class ServerPSO:
         self.pso[id].update_global() # pso 글로벌 값들을 바꿈
         self.pso[id].pilot_fuzz_init()
         self.select_main_id()
-        self.statistics.pso_update(id, {"state": f"pilot 0/{PSO.period_pilot}"})
+        self.statistics.pso_update(id, {"state": f"pilot 0/{PSO.swarm_num}", "cycles": 1})
 
 
     def update_stats(self, data): # 실행 후 정보를 slave에서 받은 경우우

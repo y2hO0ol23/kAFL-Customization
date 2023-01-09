@@ -81,12 +81,15 @@ class MasterStatistics:
 
     def pso_update(self, id, data):
         if len(self.data["pso"]) == id:
-            self.data["pso"].append({ "state": "N/A", "progress": "N/A" })
+            self.data["pso"].append({ "state": "N/A", "progress": "N/A", "cycles":0 })
         
         if "state" in data:
             self.data["pso"][id]["state"] = data["state"]
         if "progress" in data:
             self.data["pso"][id]["progress"] = data["progress"]
+        if "cycles" in data:
+            self.data["pso"][id]["cycles"] += data["cycles"]
+
     
 
     def event_node_remove_fav_bit(self, node):
