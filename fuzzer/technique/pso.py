@@ -168,6 +168,8 @@ class ServerPSO:
         self.swarm_now = 0
         self.start_time = time.time()
 
+        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}"})
+
 
     def select(self, time):
         if self.state == ServerPSO.core:
