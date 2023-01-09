@@ -183,7 +183,7 @@ class ServerPSO:
         return res
         
     def stage_assist_fuzz(self):
-        prob = [i for i in range(PSO.get_handler_num())]
+        prob = [i+1 for i in range(PSO.get_handler_num())]
         if self.pso.fitness != None:
             prob = self.pso.probability_now[self.pso.fitness]
         
