@@ -72,12 +72,11 @@ def mutate_seq_havoc_array(data, func, max_iterations, pso=None, resize=False):
 
 def mutate_seq_splice_array(data, func, max_iterations, pso=None, resize=False):
     global location_corpus
-    splice_rounds = 16
     files = glob.glob(location_corpus + "/regular/payload_*")
-    for _ in range(splice_rounds):
+    for _ in range(AFL_SPLICE_ROUNDS):
         spliced_data = havoc_splicing(data, files)
         mutate_seq_havoc_array(spliced_data,
                                func,
-                               int(2*max_iterations/splice_rounds),
+                               int(2*max_iterations/AFL_SPLICE_ROUNDS),
                                pso=pso,
                                resize=resize)

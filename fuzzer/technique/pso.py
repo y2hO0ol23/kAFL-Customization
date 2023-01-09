@@ -271,9 +271,9 @@ class ServerPSO:
 
 class ClientPSO:
     def __init__(self):
-        self.cycles = [0]*PSO.get_handler_num()
-        self.cycles_old = [0]*PSO.get_handler_num()
-        self.finds = [0]*PSO.get_handler_num()
+        self.cycles = {}
+        self.cycles_old = {}
+        self.finds = {}
     
     def reset(self):
         self.total_hit = 0
@@ -282,10 +282,11 @@ class ClientPSO:
             self.cycles_old[i] = 0
             self.finds[i] = 0
 
-    def init(self, msg):
-        self.probability_now = msg["probability"]
-        self.id = msg["info"]["id"]
-        self.swarm_num = msg["info"]["swarm_num"]
+    
+    def init(self, met):
+        self.probability_now = met["probability"]
+        self.id = met["info"]["id"]
+        self.swarm_num = met["info"]["swarm_num"]
         self.reset()
 
 

@@ -27,6 +27,7 @@ from fuzzer.node import QueueNode
 from fuzzer.technique.pso import ServerPSO
 import fuzzer.technique.havoc as havoc
 from fuzzer.state_logic import FuzzingStateLogic
+from fuzzer.technique.havoc_handler import *
 
 class MasterProcess:
 
@@ -70,10 +71,10 @@ class MasterProcess:
         if node:
             if "pso" in node.node_struct:
                 perf = node.node_struct.get("performance", 0)
-                havoc_amount = havoc.havoc_range(FuzzingStateLogic.HAVOC_MULTIPLIER / perf)
-                total_amount = havoc_amount + 2*havoc_amount # PSO-havoc + PSO-splice
-
-                node.node_struct["pso"] = self.pso.select(total_amount)
+                max_iter = havoc.havoc_range(FuzzingStateLogic.HAVOC_MULTIPLIER / perf)
+                total_iter = max_iter + int(2*max_iter/AFL_SPLICE_ROUNDS) * AFL_SPLICE_ROUNDS
+                node.node_struct["pso"] = self.pso.select(total_iter)
+                
                 node.update_file(write=True)
                 print(node.node_struct)
                 
