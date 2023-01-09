@@ -200,7 +200,7 @@ class ServerPSO:
         else:
             if not self.wait:
                 self.to_pilot_fuzz()
-                return self.stage_pilot_fuzz()
+                return self.stage_pilot_fuzz(time)
         
         return None
 
