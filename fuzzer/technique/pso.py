@@ -241,7 +241,7 @@ class ServerPSO:
     def to_core_fuzz(self, id):
         self.state[id] = ServerPSO.core # 코어 퍼징 상태로 바꿈
         self.pso[id].core_fuzz_init()
-        self.statistics.pso_update(id, {"state": "core"})
+        self.statistics.pso_update(id, {"state": f"core {PSO.swarm_num}/{PSO.swarm_num}"})
     
 
     def to_pilot_fuzz(self, id):
