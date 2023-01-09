@@ -169,6 +169,8 @@ class ServerPSO:
         for i in range(1, len(time_total)):
             if time_total[i] > time_total[self.main_id]:
                 self.main_id = i
+        
+        self.statistics.pso_update(None, {"main_id": self.main_id})
 
     
     def next_id(self, id):

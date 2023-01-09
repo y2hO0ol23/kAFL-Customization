@@ -43,7 +43,9 @@ class MasterStatistics:
                     "timeout": 0,
                     },
                 "num_slaves": self.num_slaves,
-                "pso": []
+                "pso": {
+                    'pso_main_id':0
+                    }
                 }
 
         self.stats_file = self.work_dir + "/stats"
@@ -81,7 +83,7 @@ class MasterStatistics:
 
     def pso_update(self, id, data):
         if len(self.data["pso"]) == id:
-            self.data["pso"].append({ "state": "N/A", "progress": "N/A", "cycles":0 })
+            self.data["pso"][id] = { "state": "N/A", "progress": "N/A", "cycles":0 }
         
         if "state" in data:
             self.data["pso"][id]["state"] = data["state"]
@@ -89,6 +91,8 @@ class MasterStatistics:
             self.data["pso"][id]["progress"] = data["progress"]
         if "cycles" in data:
             self.data["pso"][id]["cycles"] += data["cycles"]
+        if "main_id" in data:
+            self.data["pso"]["main_id"] = data["main_id"]
 
     
 
