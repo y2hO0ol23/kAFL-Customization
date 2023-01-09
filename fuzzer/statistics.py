@@ -82,7 +82,7 @@ class MasterStatistics:
 
 
     def pso_update(self, id, data):
-        if id not in self.data["pso"]:
+        if id != None and id not in self.data["pso"]:
             self.data["pso"][id] = { "state": "N/A", "progress": "N/A", "cycles":0 }
         
         if "state" in data:
