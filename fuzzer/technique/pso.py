@@ -178,7 +178,7 @@ class ServerPSO:
         self.count += 1
 
         new = self.count-1
-        self.order.append(new)
+        self.order.append((new, None))
         self.statistics.pso_update(new, {"state": f"pilot 0/{PSO.swarm_num}", "progress": f"0/{PSO.period_core}"})
         return new
 
