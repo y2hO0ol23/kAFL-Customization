@@ -722,7 +722,7 @@ class GuiData:
     def pso_x_now(self, swarm):
         li = self.stats["pso"]["x_now"][swarm]
         s = sum(li)
-        ret = ["%.2f"%v for v in li]
+        ret = [f'{s}'], ["%.2f"%v for v in li]
         return ret
 
 def main(stdscr):
