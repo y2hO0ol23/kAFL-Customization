@@ -283,7 +283,7 @@ class GuiDrawer:
                                           prefix="%c Slave %2d" % (hl, i))
 
 
-        if len(d.stats['pso']) > 0:
+        if 'pso' in d.stats and len(d.stats['pso']) > 0:
             self.gui.print_thin_line()
             self.gui.print_info_line([(76, 'PSO Stats', '')])
             for id in range(len(d.stats['pso'])-1):
