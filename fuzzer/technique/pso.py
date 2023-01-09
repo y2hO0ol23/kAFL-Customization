@@ -152,7 +152,7 @@ class ServerPSO:
     pilot = 0
     core = 1
 
-    def __init__(self):
+    def __init__(self, statistics):
         self.pso = []
         self.wait = []
         self.state = []
@@ -160,14 +160,8 @@ class ServerPSO:
         self.count = 0
         self.main_id = self.make_new()
         self.start_time = time.time()
-    
-    
-    def time_now(self):
-        t = int(time.time() - self.start_time)
-        s = str(t % 60).rjust(2, '0')
-        m = str((t // 60) % 60).rjust(2, '0')
-        h = str(((t // 60) // 60) % 60).rjust(2, '0')
-        return f'{h}:{m}:{s}'
+
+        self.statistics = statistics
 
 
     def select_main_id(self): # 현재까지 진행한 횟수가 가장 많은 pso space를 선택
@@ -188,6 +182,8 @@ class ServerPSO:
         self.swarm_now.append(0)
         self.state.append(ServerPSO.pilot)
         self.count += 1
+        
+        self.statistics.pso_update(self.count-1, {"state": f"pilot 0/{PSO.swarm_num}", "progress": f"0/{PSO.period_core}"})
         return self.count - 1
 
 
@@ -212,7 +208,7 @@ class ServerPSO:
         if pso.time[PSO.get_core_num()] < PSO.period_core: # 실행 목표를 달성하지 못했다면
             self.wait[id] += 1 # 기다리고 있는 slave 갯수를 증가
             pso.time[PSO.get_core_num()] += time # 돌아가는 횟수를 미리 계산 후
-            #print(f'[id {id} | core] {pso.time[PSO.get_core_num()]}/{PSO.period_core}')
+            self.statistics.pso_update(id, {"progress": f"{pso.time[PSO.get_core_num()]}/{PSO.period_core}"})
             return {"info": {"id": id, "swarm_num": PSO.get_core_num()}, "probability": pso.probability_now[pso.fitness]}
 
         else:
@@ -228,11 +224,13 @@ class ServerPSO:
 
         if pso.time[self.swarm_now[id]] >= PSO.period_pilot:
             self.swarm_now[id] += 1
+
+            if self.swarm_now[id] != PSO.get_core_num():
+                self.statistics.pso_update(id, {"state": f"pilot {self.swarm_now[id]}/{PSO.swarm_num}"})
         
         swarm_now = self.swarm_now[id]
         if swarm_now == PSO.get_core_num():
             if self.wait[id]:
-                #print(f'[id {id} | core] wait {self.wait[id]}')
                 return None
             else:
                 self.to_core_fuzz(id)
@@ -240,14 +238,14 @@ class ServerPSO:
         else:
             self.wait[id] += 1
             pso.time[swarm_now] += time
-            #print(f'[id {id} | swarm {swarm_now}] {pso.time[swarm_now]}/{PSO.period_pilot}')
+            self.statistics.pso_update(id, {"progress": f"{pso.time[swarm_now]}/{PSO.period_pilot}"})
             return {"info": {"id": id, "swarm_num": swarm_now}, "probability": pso.probability_now[swarm_now]}
 
 
     def to_core_fuzz(self, id):
         self.state[id] = ServerPSO.core # 코어 퍼징 상태로 바꿈
         self.pso[id].core_fuzz_init()
-        print(f'[{self.time_now()}] id {id} : start core fuzz')
+        self.statistics.pso_update(id, {"state": "core"})
     
 
     def to_pilot_fuzz(self, id):
@@ -256,7 +254,7 @@ class ServerPSO:
         self.pso[id].update_global() # pso 글로벌 값들을 바꿈
         self.pso[id].pilot_fuzz_init()
         self.select_main_id()
-        print(f'[{self.time_now()}] id {id} : start pilot fuzz')
+        self.statistics.pso_update(id, {"state": f"pilot 0/{PSO.period_pilot}"})
 
 
     def update_stats(self, data): # 실행 후 정보를 slave에서 받은 경우우

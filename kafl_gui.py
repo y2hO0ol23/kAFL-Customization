@@ -282,6 +282,16 @@ class GuiDrawer:
                                           (13, "exec/s",    "  N/A ")],
                                           prefix="%c Slave %2d" % (hl, i))
 
+
+        if len(d.stats['pso']) > 0:
+            self.gui.print_thin_line()
+            self.gui.print_info_line([(15, 'PSO Stats', '')])
+            for i in range(len(d.stats['pso'])):
+                self.gui.print_info_line([(20, 'state', d.pso_state())
+                                          (20, 'progress', d.pso_progress())],
+                                          prefix=" id %d"%i)
+
+
         i = self.current_slave_id
         self.gui.print_thin_line()
         self.gui.print_title_line("Payload Info")
@@ -695,7 +705,12 @@ class GuiData:
             return msgpack.unpackb(data, raw=False, strict_map_key=False)
         else:
             return None
-
+            
+    def pso_state(self, id):
+        return self.stats["pso"][id]["state"]
+    
+    def pso_progress(self, id):
+        return self.stats["pso"][id]["progress"]
 
 def main(stdscr):
     gui = GuiDrawer(sys.argv[1], stdscr)

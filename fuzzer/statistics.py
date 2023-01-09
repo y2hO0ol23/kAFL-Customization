@@ -42,7 +42,8 @@ class MasterStatistics:
                     "kasan": 0,
                     "timeout": 0,
                     },
-                "num_slaves": self.num_slaves
+                "num_slaves": self.num_slaves,
+                "pso": []
                 }
 
         self.stats_file = self.work_dir + "/stats"
@@ -76,6 +77,17 @@ class MasterStatistics:
 
         self.data["bytes_in_bitmap"] += len(node.get_new_bytes())
         self.data["max_level"] = max(node.get_level(), self.data["max_level"])
+
+
+    def pso_updates(self, id, data):
+        if len(self.data["pso"]) < id:
+            self.data["pso"].append({ "state": "N/A", "progress": "N/A" })
+        
+        if "state" in data:
+            self.data["pso"]["state"] = data["state"]
+        if "progress" in data:
+            self.data["pso"]["state"] = data["now"]
+    
 
     def event_node_remove_fav_bit(self, node):
         # called when queue manager removed a fav bit from an existing node.

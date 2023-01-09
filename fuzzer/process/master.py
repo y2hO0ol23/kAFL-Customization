@@ -50,7 +50,7 @@ class MasterProcess:
                 afl_arith_max=self.config.config_values['ARITHMETIC_MAX']
                 )
 
-        self.pso = ServerPSO()
+        self.pso = ServerPSO(self.statistics)
 
         log_master("Starting (pid: %d)" % os.getpid())
         log_master("Configuration dump:\n%s" %
