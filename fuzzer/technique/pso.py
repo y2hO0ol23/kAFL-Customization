@@ -167,7 +167,7 @@ class ServerPSO:
         self.order = [(i, sum(pso.time)) for i, pso in enumerate(self.pso)]
         self.order.sort(key=lambda x: x[1])
         
-        self.statistics.pso_update(None, {"main_id": self.order[0]})
+        self.statistics.pso_update(None, {"main_id": self.order[0][0]})
 
 
     def make_new(self):
