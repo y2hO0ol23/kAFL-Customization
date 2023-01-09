@@ -44,7 +44,7 @@ class MasterStatistics:
                     },
                 "num_slaves": self.num_slaves,
                 "pso": {
-                    'main_id':0
+                    'main_id':1
                     }
                 }
 

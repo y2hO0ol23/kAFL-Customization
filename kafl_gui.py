@@ -288,6 +288,8 @@ class GuiDrawer:
             self.gui.print_info_line([(76, 'PSO Stats', '')])
             for id in range(len(d.stats['pso'])-1):
                 hl = ' '
+                if id == 0:
+                    hl = '#'
                 if id == d.pso_main_id():
                     hl = '>'
                 self.gui.print_info_line([(7, '%c id'%hl, '%2d'%id),
