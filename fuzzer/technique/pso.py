@@ -273,8 +273,7 @@ class ServerPSO:
 
 
 class ClientPSO:
-    def __init__(self, connection):
-        self.conn = connection
+    def __init__(self):
         self.cycles = [0]*PSO.get_handler_num()
         self.cycles_old = [0]*PSO.get_handler_num()
         self.finds = [0]*PSO.get_handler_num()
@@ -312,12 +311,11 @@ class ClientPSO:
     
 
     def update(self, hits):
-        if hits > 0:
-            self.total_hit += hits
-            for i in range(PSO.get_handler_num()):
-                if self.cycles[i] > self.cycles_old[i]:
-                    self.finds[i] += hits
-                    self.cycles_old[i] = self.cycles[i]
+        self.total_hit += hits
+        for i in range(PSO.get_handler_num()):
+            if self.cycles[i] > self.cycles_old[i]:
+                self.finds[i] += hits
+                self.cycles_old[i] = self.cycles[i]
 
 
     def result(self):

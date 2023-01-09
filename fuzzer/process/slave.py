@@ -81,7 +81,7 @@ class SlaveProcess:
 
         self.bitmap_storage = BitmapStorage(self.config, self.config.config_values['BITMAP_SHM_SIZE'], "master")
         
-        self.pso = ClientPSO(connection)
+        self.pso = ClientPSO()
 
     def handle_import(self, msg):
         meta_data = {"state": {"name": "import"}, "id": 0}

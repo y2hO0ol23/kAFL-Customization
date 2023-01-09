@@ -101,7 +101,7 @@ class FuzzingStateLogic:
             resume, afl_det_info = self.handle_deterministic(payload, metadata)
             if resume:
                 return self.create_update({"name": "deterministic"}, {"afl_det_info": afl_det_info}), None
-            return self.create_update({"name": "havoc"}, {"afl_det_info": afl_det_info, "pso":'init'}), None
+            return self.create_update({"name": "havoc"}, {"afl_det_info": afl_det_info, "pso":None}), None
         elif metadata["state"]["name"] == "havoc":
             self.handle_havoc(payload, metadata)
             return self.create_update({"name": "final"}, {"pso":self.slave.pso.result()}), None
@@ -513,10 +513,10 @@ class FuzzingStateLogic:
         havoc_amount = havoc.havoc_range(self.HAVOC_MULTIPLIER / perf)
 
         if use_splicing:
-            self.stage_update_label("splice-mopt")
+            self.stage_update_label("splice-PSO")
             havoc.mutate_seq_splice_array(payload_array, self.execute, havoc_amount, pso=self.slave.pso)
         else:
-            self.stage_update_label("havoc-mopt")
+            self.stage_update_label("havoc-PSO")
             havoc.mutate_seq_havoc_array(payload_array, self.execute, havoc_amount, pso=self.slave.pso)
 
 
