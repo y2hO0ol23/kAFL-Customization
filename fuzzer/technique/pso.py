@@ -69,7 +69,7 @@ class PSO:
         self.eff_best = PSO.list_init()
         self.G_best = [0.5] * PSO.get_handler_num()
         self.v_now = PSO.list_init(0.1)
-        self.probability_now = [[]] * PSO.get_swarm_num()
+        self.probability_now = PSO.list_init()
         self.swarm_fitness = [0] * PSO.swarm_num
 
         self.finds = PSO.list_init()
