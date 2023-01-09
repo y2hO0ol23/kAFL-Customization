@@ -79,7 +79,7 @@ class MasterStatistics:
         self.data["max_level"] = max(node.get_level(), self.data["max_level"])
 
 
-    def pso_updates(self, id, data):
+    def pso_update(self, id, data):
         if len(self.data["pso"]) < id:
             self.data["pso"].append({ "state": "N/A", "progress": "N/A" })
         
