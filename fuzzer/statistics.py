@@ -80,7 +80,7 @@ class MasterStatistics:
 
 
     def pso_update(self, id, data):
-        if len(self.data["pso"]) < id:
+        if len(self.data["pso"]) == id:
             self.data["pso"].append({ "state": "N/A", "progress": "N/A" })
         
         if "state" in data:
