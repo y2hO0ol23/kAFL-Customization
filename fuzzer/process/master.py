@@ -69,15 +69,15 @@ class MasterProcess:
         node = self.queue.get_next()
         if node:
             met = node.node_struct
-            if "pso" in met.get("results", {}):
-                print(met["results"]["pso"])
-                if met["results"]["pso"] != 'init':
-                    self.pso.update_stats(met["results"]["pso"])
+            if "pso" in met:
+                print(met["pso"])
+                if met["pso"] != 'init':
+                    self.pso.update_stats(met["pso"])
 
-                perf = met["results"].get("performance", 0)
+                perf = met.get("performance", 0)
                 havoc_amount = havoc.havoc_range(FuzzingStateLogic.HAVOC_MULTIPLIER / perf)
                 total_amount = havoc_amount + 2*havoc_amount
-                node.node_struct["results"]["pso"] = self.pso.select(total_amount)
+                node.node_struct["pso"] = self.pso.select(total_amount)
 
                 node.update_file(write=True)
                 
