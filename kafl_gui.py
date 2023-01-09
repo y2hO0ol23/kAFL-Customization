@@ -291,7 +291,7 @@ class GuiDrawer:
             if 'x_now' in d.stats['pso']:
                 self.gui.print_thin_line()
                 for i in range(len(d.stats['pso']['x_now'])-1):
-                    self.gui.stdscr.addstr(self.gui.y, 0, 'swarm%2d: '%i + " ".join(d.pso_x_now(i)))
+                    self.gui.stdscr.addstr(self.gui.y, 0, '┃' +'swarm%2d: '%i + " ".join(d.pso_x_now(i)))
                     self.gui.y += 1
 
         i = self.current_slave_id
