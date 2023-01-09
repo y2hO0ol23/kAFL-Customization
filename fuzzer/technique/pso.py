@@ -168,7 +168,7 @@ class ServerPSO:
         self.swarm_now = 0
         self.start_time = time.time()
 
-        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "x_now":self.pso.x_now})
+        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "x_now": self.pso.x_now})
 
 
     def select(self, time):
@@ -235,7 +235,7 @@ class ServerPSO:
         self.state = ServerPSO.pilot # 퍼징 상태를 바꿈
         self.swarm_now = 0
         self.pso.core_fuzz_end()
-        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "cycles": 1})
+        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "cycles": 1, "x_now": self.pso.x_now})
 
 
     def update_stats(self, data): # 실행 후 정보를 slave에서 받은 경우우
