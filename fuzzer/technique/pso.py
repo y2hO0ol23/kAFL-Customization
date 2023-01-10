@@ -168,7 +168,7 @@ class ServerPSO:
         self.swarm_now = 0
         self.start_time = time.time()
 
-        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "pso": self.pso})
+        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "pso": {'handler_num': PSO.get_handler_num(), 'x_now': self.pso.x_now[0], 'G_best': self.pso.G_best, 'L_best': self.pso.L_best[0]}})
 
 
     def select(self, time):

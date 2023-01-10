@@ -11,7 +11,6 @@ import msgpack
 import time
 
 from common.util import atomic_write, read_binary_file
-from fuzzer.technique.pso import PSO
 
 class MasterStatistics:
     def __init__(self, config):
@@ -96,11 +95,13 @@ class MasterStatistics:
             cur_time = time.time()
             run_time = cur_time - self.data["start_time"]
 
-            pso:PSO = data["pso"]
-            handler_num = len(pso.v_now)
+            v_now = data["pso"]['v_now']
+            G_best = data["pso"]['G_best']
+            L_best = data["pso"]['L_best']
+            handler_num = data["pso"]["handler_num"]
             res = "%06d"%run_time
             for i in range(handler_num):
-                res += ";%f/%f/%f"%(pso.v_now[0][i], pso.G_best[i], pso.L_best[0][i])
+                res += ";%f/%f/%f"%(v_now[i], G_best[i], L_best[i])
 
             with open(self.pso_file, 'a') as fd:
                 fd.write(res + '\n')
