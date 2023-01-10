@@ -95,13 +95,13 @@ class MasterStatistics:
             cur_time = time.time()
             run_time = cur_time - self.data["start_time"]
 
-            v_now = data["pso"]['v_now']
+            x_now = data["pso"]['x_now']
             G_best = data["pso"]['G_best']
             L_best = data["pso"]['L_best']
             handler_num = data["pso"]["handler_num"]
             res = "%06d"%run_time
             for i in range(handler_num):
-                res += ";%f/%f/%f"%(v_now[i], G_best[i], L_best[i])
+                res += ";%f/%f/%f"%(x_now[i], G_best[i], L_best[i])
 
             with open(self.pso_file, 'a') as fd:
                 fd.write(res + '\n')
