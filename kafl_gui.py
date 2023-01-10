@@ -288,14 +288,6 @@ class GuiDrawer:
             self.gui.print_info_line([(20, 'state', d.pso_state()),
                                       (27, 'progress', d.pso_progress()),
                                       (16, 'cycles', '%4d'%d.pso_cycles())], prefix="PSO: ")
-            if 'x_now' in d.stats['pso']:
-                self.gui.print_thin_line()
-                for i in range(len(d.stats['pso']['x_now'])-1):
-                    v = '┃' +'swarm%2d: '%i + "% ".join(d.pso_x_now(i)) + '%'
-                    if len(v) <= 78:
-                        v = v.ljust(79, ' ') + '┃'
-                    self.gui.stdscr.addstr(self.gui.y, 0, v)
-                    self.gui.y += 1
 
         i = self.current_slave_id
         self.gui.print_thin_line()
@@ -719,12 +711,7 @@ class GuiData:
     
     def pso_cycles(self):
         return self.stats["pso"]["cycles"]
-    
-    def pso_x_now(self, swarm):
-        li = self.stats["pso"]["x_now"][swarm]
-        s = sum(li)
-        ret = [("%.1f"%(v/s*100)).rjust(4, ' ') for v in li]
-        return ret
+        
 
 def main(stdscr):
     gui = GuiDrawer(sys.argv[1], stdscr)

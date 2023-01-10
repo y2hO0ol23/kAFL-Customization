@@ -11,6 +11,7 @@ import msgpack
 import time
 
 from common.util import atomic_write, read_binary_file
+from fuzzer.technique.pso import PSO
 
 class MasterStatistics:
     def __init__(self, config):
@@ -52,6 +53,7 @@ class MasterStatistics:
 
         self.stats_file = self.work_dir + "/stats"
         self.plot_file  = self.work_dir + "/stats.csv"
+        self.pso_file  = self.work_dir + "/pso.csv"
         # write once so that we have a valid stats file
         self.write_statistics()
 
@@ -90,8 +92,18 @@ class MasterStatistics:
             self.data["pso"]["progress"] = data["progress"]
         if "cycles" in data:
             self.data["pso"]["cycles"] += data["cycles"]
-        if "x_now" in data:
-            self.data["pso"]["x_now"] = data["x_now"]
+        if "pso" in data:
+            cur_time = time.time()
+            run_time = cur_time - self.data["start_time"]
+
+            pso:PSO = data["pso"]
+            handler_num = len(pso.v_now)
+            res = "%06d"%run_time
+            for i in range(handler_num):
+                res += ";%f/%f/%f"%(pso.v_now[0][i], pso.G_best[i], pso.L_best[0][i])
+
+            with open(self.pso_file, 'a') as fd:
+                fd.write(res + '\n')
     
 
     def event_node_remove_fav_bit(self, node):
