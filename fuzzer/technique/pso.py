@@ -148,12 +148,17 @@ class PSO:
         for tmp_swarm in range(PSO.swarm_num):
             self.update_probability(tmp_swarm)
             
+
     def core_fuzz_end(self):
         for i in range(PSO.get_handler_num()):
             self.finds_total[PSO.get_core_num()][i] += self.finds[PSO.get_core_num()][i]
 
         self.update_global() # pso 글로벌 값들을 바꿈
         self.pilot_fuzz_init()
+    
+    
+    def state_for_csv(self):
+        return {'handler_num': PSO.get_handler_num(), 'x_now': self.x_now[0], 'G_best': self.G_best, 'L_best': self.L_best[0]}
 
 
 class ServerPSO:
@@ -168,7 +173,7 @@ class ServerPSO:
         self.swarm_now = 0
         self.start_time = time.time()
 
-        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "pso": {'handler_num': PSO.get_handler_num(), 'x_now': self.pso.x_now[0], 'G_best': self.pso.G_best, 'L_best': self.pso.L_best[0]}})
+        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "pso": self.pso.state_for_csv()})
 
 
     def select(self, time):
@@ -235,7 +240,7 @@ class ServerPSO:
         self.state = ServerPSO.pilot # 퍼징 상태를 바꿈
         self.swarm_now = 0
         self.pso.core_fuzz_end()
-        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "cycles": 1, "x_now": self.pso.x_now})
+        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "cycles": 1, "pso": self.pso.state_for_csv()})
 
 
     def update_stats(self, data): # 실행 후 정보를 slave에서 받은 경우우
