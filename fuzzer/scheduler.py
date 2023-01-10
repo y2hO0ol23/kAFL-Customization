@@ -85,9 +85,9 @@ class Scheduler:
         node.set_score(score)
 
         if node.get_state() in ["initial", "redq/grim"]:
-            phase = 8
+            phase = 256
         elif node.get_state() in ["deterministic"]:
-            phase = 1
+            phase = 8
         elif node.get_state() in ["havoc"]:
             phase = 256
         elif node.get_state() in ["final"]:
