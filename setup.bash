@@ -29,9 +29,9 @@ if [ ! -z $1 ]; then
             echo "[-] File already exist. Stop..."
             exit 3
         fi
+    else
+        echo "[-] No file to backup"
     fi
-else
-    echo "[-] No file to backup"
 fi
 
 cp -rf ./kAFL-Customization ./kAFL-Fuzzer
