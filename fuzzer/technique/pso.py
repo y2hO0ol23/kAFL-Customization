@@ -124,13 +124,9 @@ class PSO:
         self.total_hit[swarm_num] += state['total_hit']
         new_finds = state['finds']
         new_cycles = state['cycles']
-        new_finds_total = 0
         for i in range(PSO.get_handler_num()):
             self.finds[swarm_num][i] += new_finds[i]
             self.cycles[swarm_num][i] += new_cycles[i]
-            new_finds_total += new_finds[i]
-        
-        return new_finds_total # for pacemaker
 
 
     def update_global(self):
@@ -177,7 +173,7 @@ class ServerPSO:
         self.swarm_now = 0
         self.start_time = time.time()
 
-        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "progress": f"0/{PSO.period_pilot}", "pso": self.pso.state_for_csv()})
+        self.statistics.event_pso_update({"state": f"pilot 0/{PSO.swarm_num}", "progress": f"0/{PSO.period_pilot}", "pso": self.pso.state_for_csv()})
 
 
     def select(self, time):
@@ -203,7 +199,7 @@ class ServerPSO:
         if self.pso.time[PSO.get_core_num()] < PSO.period_core: # 실행 목표를 달성하지 못했다면
             self.wait += 1 # 기다리고 있는 slave 갯수를 증가
             self.pso.time[PSO.get_core_num()] += time # 돌아가는 횟수를 미리 계산 후
-            self.statistics.pso_update({"progress": f"{self.pso.time[PSO.get_core_num()]}/{PSO.period_core}"})
+            self.statistics.event_pso_update({"progress": f"{self.pso.time[PSO.get_core_num()]}/{PSO.period_core}"})
             return {"info": {"swarm_now": PSO.get_core_num()}, "probability": self.pso.probability_now[self.pso.fitness]}
 
         else:
@@ -219,7 +215,7 @@ class ServerPSO:
             self.swarm_now += 1
 
             if self.swarm_now != PSO.get_core_num():
-                self.statistics.pso_update({"state": f"pilot {self.swarm_now}/{PSO.swarm_num}"})
+                self.statistics.event_pso_update({"state": f"pilot {self.swarm_now}/{PSO.swarm_num}"})
         
         if self.swarm_now == PSO.get_core_num():
             if self.wait:
@@ -230,37 +226,33 @@ class ServerPSO:
         else:
             self.wait += 1
             self.pso.time[self.swarm_now] += time
-            self.statistics.pso_update({"progress": f"{self.pso.time[self.swarm_now]}/{PSO.period_pilot}"})
+            self.statistics.event_pso_update({"progress": f"{self.pso.time[self.swarm_now]}/{PSO.period_pilot}"})
             return {"info": {"swarm_now": self.swarm_now}, "probability": self.pso.probability_now[self.swarm_now]}
 
 
     def to_core_fuzz(self):
         self.state = ServerPSO.core # 코어 퍼징 상태로 바꿈
         self.pso.core_fuzz_init()
-        self.statistics.pso_update({"state": f"core {PSO.swarm_num}/{PSO.swarm_num}"})
+        self.statistics.event_pso_update({"state": f"core {PSO.swarm_num}/{PSO.swarm_num}"})
     
 
     def to_pilot_fuzz(self):
         self.state = ServerPSO.pilot # 퍼징 상태를 바꿈
         self.swarm_now = 0
         self.pso.core_fuzz_end()
-        self.statistics.pso_update({"state": f"pilot 0/{PSO.swarm_num}", "cycles": 1, "pso": self.pso.state_for_csv()})
+        self.statistics.event_pso_update({"state": f"pilot 0/{PSO.swarm_num}", "cycles": 1, "pso": self.pso.state_for_csv()})
 
 
     def update_stats(self, data): # 실행 후 정보를 slave에서 받은 경우우
         swarm_now = data['info']['swarm_now']
 
         if swarm_now == 'assist':
-            new_finds_total = 0
             for i in range(PSO.get_handler_num()):
                 self.pso.finds_total[PSO.get_core_num()][i] += data['state']['finds'][i]
-                new_finds_total += data['state']['finds'][i]
 
         else:
             self.wait -= 1 # 기다리고 있는 slave 갯수를 감소
-            new_finds_total = self.pso.update(swarm_now, data['state']) # 해당 정보로 pso 변수들을 업데이트 함
-                
-        return new_finds_total # for pacemaker
+            self.pso.update(swarm_now, data['state']) # 해당 정보로 pso 변수들을 업데이트 함
 
 
 class ClientPSO:

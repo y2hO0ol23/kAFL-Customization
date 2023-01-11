@@ -47,7 +47,8 @@ class MasterStatistics:
                     "state": "N/A", 
                     "progress": "N/A", 
                     "cycles":0 
-                    }
+                    },
+                "pacemaker": False
                 }
 
         self.stats_file = self.work_dir + "/stats"
@@ -84,7 +85,7 @@ class MasterStatistics:
         self.data["max_level"] = max(node.get_level(), self.data["max_level"])
 
 
-    def pso_update(self, data):
+    def event_pso_update(self, data):
         if "state" in data:
             self.data["pso"]["state"] = data["state"]
         if "progress" in data:
@@ -106,7 +107,9 @@ class MasterStatistics:
             with open(self.pso_file, 'a') as fd:
                 fd.write(res + '\n')
     
-
+    def event_pacemaker_update(self, state):
+        self.data['pacemaker'] = state
+    
     def event_node_remove_fav_bit(self, node):
         # called when queue manager removed a fav bit from an existing node.
         # check if that was the last fav and maybe update #fav_pending count

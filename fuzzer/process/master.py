@@ -56,10 +56,10 @@ class MasterProcess:
         print(config.argument_values['L'])
         if True:#not config.argument_values['L']:
             default_time_limit = 60
-            self.pacemaker = Pacemaker(default_time_limit)
+            self.pacemaker = Pacemaker(self.statistics, default_time_limit)
         else:
             time_limit = config.argument_values['L']
-            self.pacemaker = Pacemaker(time_limit)
+            self.pacemaker = Pacemaker(self.statistics, time_limit)
 
         log_master("Starting (pid: %d)" % os.getpid())
         log_master("Configuration dump:\n%s" %
@@ -114,10 +114,10 @@ class MasterProcess:
                     # Slave execution done, update queue item + send new task
                     log_master("Received results, sending next task..")
                     if msg["results"].get("pso", None):
-                        new_finds_total = self.pso.update_stats(msg["results"]["pso"])
-                        msg["results"]["pso"] = None
                         if self.pacemaker.on():
-                            self.pacemaker.update(finds=new_finds_total)
+                            self.pacemaker.update(finds=sum(msg["results"]["pso"]['state']['finds']))
+                        self.pso.update_stats(msg["results"]["pso"])
+                        msg["results"]["pso"] = None
                     if msg["node_id"]:
                         self.queue.update_node_results(msg["node_id"], msg["results"], msg["new_payload"])
                     self.send_next_task(conn)

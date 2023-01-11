@@ -9,10 +9,11 @@ class Pacemaker:
         return 0 < Pacemaker.bound and Pacemaker.bound < 1
 
 
-    def __init__(self, time_limit=60):
+    def __init__(self, statistics, time_limit):
+        self.statistics = statistics
+        self.time_limit = time_limit
         self.last_path_time = 0
         self.last_crash_time = 0
-        self.time_limit = time_limit
         self.key = False
 
         if Pacemaker.is_tmp_mode():
@@ -24,6 +25,7 @@ class Pacemaker:
         if self.key:
             if Pacemaker.is_tmp_mode():
                 if self.new_finds > self.new_finds * Pacemaker.bound + self.total_finds:
+                    self.statistics.event_pacemaker_update(False)
                     self.key = False
                     self.total_finds += self.new_finds
                     self.new_finds = 0
@@ -32,6 +34,7 @@ class Pacemaker:
             if self.last_path_time:
                 if time.time() - self.last_path_time >= self.time_limit:
                     if time.time() - self.last_crash_time >= self.time_limit:
+                        self.statistics.event_pacemaker_update(True)
                         self.key = True
                         self.total_finds += self.new_finds
                         self.new_finds = 0
