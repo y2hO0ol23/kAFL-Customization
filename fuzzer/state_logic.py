@@ -117,6 +117,8 @@ class FuzzingStateLogic:
 
         if metadata.get("pso", None):
             self.slave.pso.init(metadata.get("pso", None))
+        
+        self.pacemaker = metadata.get("pacemaker", False)
 
         self.stage_info["stage"] = stage
         self.stage_info["parent"] = nid
@@ -407,7 +409,7 @@ class FuzzingStateLogic:
                     effector_map[i + j] = 1
 
     def handle_deterministic(self, payload, metadata):
-        if not self.config.argument_values['D']:
+        if not self.config.argument_values['D'] or self.pacemaker:
             return False, {}
 
         skip_zero = self.config.argument_values['s']

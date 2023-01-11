@@ -28,6 +28,7 @@ from fuzzer.technique.pso import ServerPSO
 import fuzzer.technique.havoc as havoc
 from fuzzer.state_logic import FuzzingStateLogic
 from fuzzer.technique.havoc_handler import *
+from fuzzer.technique.pacemaker import *
 
 class MasterProcess:
 
@@ -51,6 +52,14 @@ class MasterProcess:
                 )
 
         self.pso = ServerPSO(self.statistics)
+        
+        if not config.argument_values['L']:
+            default_time_limit = 60
+            self.pacemaker = Pacemaker(default_time_limit)
+        else:
+            time_limit = config.argument_values['L']
+            print(time_limit)
+            self.pacemaker = Pacemaker(time_limit)
 
         log_master("Starting (pid: %d)" % os.getpid())
         log_master("Configuration dump:\n%s" %
@@ -69,12 +78,20 @@ class MasterProcess:
         # Process items from queue..
         node = self.queue.get_next()
         if node:
+            update = False
+
             if "pso" in node.node_struct:
                 perf = node.node_struct.get("performance", 0)
                 max_iter = havoc.havoc_range(FuzzingStateLogic.HAVOC_MULTIPLIER / perf)
                 total_iter = max_iter + int(2*max_iter/AFL_SPLICE_ROUNDS) * AFL_SPLICE_ROUNDS
                 node.node_struct["pso"] = self.pso.select(total_iter)
-                
+                update = True
+
+            if self.pacemaker.on():
+                node.node_struct["pacemaker"] = True
+                update = True
+
+            if update:
                 node.update_file(write=True)
                 
             return self.comm.send_node(conn, {"type": "node", "nid": node.get_id()})
@@ -97,8 +114,11 @@ class MasterProcess:
                     # Slave execution done, update queue item + send new task
                     log_master("Received results, sending next task..")
                     if msg["results"].get("pso", None):
-                        self.pso.update_stats(msg["results"]["pso"])
+                        new_finds_total = self.pso.update_stats(msg["results"]["pso"])
                         msg["results"]["pso"] = None
+                        
+                        if self.pacemaker.on():
+                            self.pacemaker.update(finds=new_finds_total)
                     if msg["node_id"]:
                         self.queue.update_node_results(msg["node_id"], msg["results"], msg["new_payload"])
                     self.send_next_task(conn)
@@ -147,6 +167,9 @@ class MasterProcess:
             node.set_new_bytes(new_bytes, write=False)
             node.set_new_bits(new_bits, write=False)
             self.queue.insert_input(node, bitmap)
+            if node_struct["info"]["exit_reson"] == "crash":
+                self.pacemaker.update(crash_time=time.time())
+            self.pacemaker.update(path_time=time.time())
         elif self.debug_mode:
             if node_struct["info"]["exit_reason"] != "regular":
                 log_master("Payload found to be boring, not saved (exit=%s)" % node_struct["info"]["exit_reason"])

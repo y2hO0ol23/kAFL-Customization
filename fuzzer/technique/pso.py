@@ -124,9 +124,13 @@ class PSO:
         self.total_hit[swarm_num] += state['total_hit']
         new_finds = state['finds']
         new_cycles = state['cycles']
+        new_finds_total = 0
         for i in range(PSO.get_handler_num()):
             self.finds[swarm_num][i] += new_finds[i]
             self.cycles[swarm_num][i] += new_cycles[i]
+            new_finds_total += new_finds[i]
+        
+        return new_finds_total # for pacemaker
 
 
     def update_global(self):
@@ -247,11 +251,16 @@ class ServerPSO:
         swarm_now = data['info']['swarm_now']
 
         if swarm_now == 'assist':
+            new_finds_total = 0
             for i in range(PSO.get_handler_num()):
                 self.pso.finds_total[PSO.get_core_num()][i] += data['state']['finds'][i]
+                new_finds_total += data['state']['finds'][i]
+
         else:
             self.wait -= 1 # 기다리고 있는 slave 갯수를 감소
-            self.pso.update(swarm_now, data['state']) # 해당 정보로 pso 변수들을 업데이트 함
+            new_finds_total = self.pso.update(swarm_now, data['state']) # 해당 정보로 pso 변수들을 업데이트 함
+                
+        return new_finds_total # for pacemaker
 
 
 class ClientPSO:
