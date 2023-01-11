@@ -33,6 +33,8 @@ class Pacemaker:
                 if time.time() - self.last_path_time >= self.time_limit:
                     if time.time() - self.last_crash_time >= self.time_limit:
                         self.key = True
+                        self.total_finds += self.new_finds
+                        self.new_finds = 0
             
         return self.key
 
