@@ -53,12 +53,12 @@ class MasterProcess:
 
         self.pso = ServerPSO(self.statistics)
         
-        if not config.argument_values['L']:
+        print(config.argument_values['L'])
+        if True:#not config.argument_values['L']:
             default_time_limit = 60
             self.pacemaker = Pacemaker(default_time_limit)
         else:
             time_limit = config.argument_values['L']
-            print(time_limit)
             self.pacemaker = Pacemaker(time_limit)
 
         log_master("Starting (pid: %d)" % os.getpid())
@@ -116,7 +116,6 @@ class MasterProcess:
                     if msg["results"].get("pso", None):
                         new_finds_total = self.pso.update_stats(msg["results"]["pso"])
                         msg["results"]["pso"] = None
-                        
                         if self.pacemaker.on():
                             self.pacemaker.update(finds=new_finds_total)
                     if msg["node_id"]:
