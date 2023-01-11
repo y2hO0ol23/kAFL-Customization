@@ -20,15 +20,18 @@ if [ -f "./kAFL-Fuzzer/kafl.ini" ]; then
     echo "[+] Copied kafl.ini"
 fi
 
-if [ -d "./kAFL-Fuzzer" ]; then
-    for (( i=0 ; ; i++ )); do
-        backupFile="./Backup$i"
-        if [ ! -d $backupFile ]; then
-            mv ./kAFL-Fuzzer $backupFile
-            echo "[+] Made a backup. ($backupFile)"
-            break
+if [ ! -z $1 ]; then
+    if [ -d "./kAFL-Fuzzer" ]; then
+        if [ ! -d $1 ]; then
+            mv ./kAFL-Fuzzer $1
+            echo "[+] Made a backup. ($1)"
+        else
+            echo "[-] File already exist. Stop..."
+            exit 3
         fi
-    done
+    fi
+else
+    echo "[-] No file to backup"
 fi
 
 cp -rf ./kAFL-Customization ./kAFL-Fuzzer
