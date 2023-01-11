@@ -286,8 +286,8 @@ class GuiDrawer:
         if 'pso' in d.stats:
             self.gui.print_thin_line()
             self.gui.print_info_line([(20, 'state', d.pso_state()),
-                                      (27, 'progress', d.pso_progress()),
-                                      (16, 'cycles', '%4d'%d.pso_cycles())], prefix="PSO: ")
+                                      (30, 'progress', d.pso_progress()),
+                                      (13, 'cycles', '%4d'%d.pso_cycles())], prefix="PSO: ")
 
         i = self.current_slave_id
         self.gui.print_thin_line()
