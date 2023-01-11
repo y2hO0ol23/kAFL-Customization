@@ -429,8 +429,8 @@ class FuzzingStateLogic:
             bitflip.mutate_seq_four_walking_bits(payload_array, self.execute, skip_null=skip_zero, effector_map=limiter_map)
 
             det_info["stage"] = "flip_8"
-            if self.stage_timeout_reached():
-                return True, det_info
+            #if self.stage_timeout_reached():
+            #    return True, det_info
 
         # Walking byte sets..
         if det_info["stage"] == "flip_8":
@@ -452,8 +452,8 @@ class FuzzingStateLogic:
             det_info["stage"] = "arith"
             if effector_map:
                 det_info["eff_map"] = bytearray(effector_map)
-            if self.stage_timeout_reached():
-                return True, det_info
+            #if self.stage_timeout_reached():
+            #    return True, det_info
 
         # Arithmetic mutations..
         if det_info["stage"] == "arith":
@@ -463,8 +463,8 @@ class FuzzingStateLogic:
             arithmetic.mutate_seq_32_bit_arithmetic(payload_array, self.execute, skip_null=skip_zero, effector_map=effector_map, arith_max=arith_max)
 
             det_info["stage"] = "intr"
-            if self.stage_timeout_reached():
-                return True, det_info
+            #if self.stage_timeout_reached():
+            #    return True, det_info
 
         # Interesting value mutations..
         if det_info["stage"] == "intr":
