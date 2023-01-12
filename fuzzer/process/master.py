@@ -29,6 +29,7 @@ import fuzzer.technique.havoc as havoc
 from fuzzer.state_logic import FuzzingStateLogic
 from fuzzer.technique.havoc_handler import *
 from fuzzer.technique.pacemaker import *
+import time
 
 class MasterProcess:
 
