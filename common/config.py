@@ -190,7 +190,7 @@ def add_args_qemu(parser):
                         action='store_true', default=False)
 
 def add_args_custom(parser):
-    parser.add_argument('-L', required=False, metavar='<time limit>', type=float,
+    parser.add_argument('-L', required=False, metavar='<time>', type=float,
                         help='time limit for pacemaker fuzz.', default=None)
     #parser.add_argument('-dict', required=False, metavar='<file>', type=parse_is_file,
     #                    help='import dictionary file for use in havoc stage.', default=None)

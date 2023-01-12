@@ -282,7 +282,6 @@ class GuiDrawer:
                                           (13, "exec/s",    "  N/A ")],
                                           prefix="%c Slave %2d" % (hl, i))
 
-
         if 'pso' in d.stats:
             self.gui.print_thin_line()
             self.gui.print_info_line([(20, 'state', d.pso_state()),
@@ -291,8 +290,7 @@ class GuiDrawer:
         
         self.gui.print_thin_line()
         self.gui.print_info_line([(78, 'Pacemaker', d.pacemaker_state())])
-
-
+        
         i = self.current_slave_id
         self.gui.print_thin_line()
         self.gui.print_title_line("Payload Info")
@@ -306,7 +304,7 @@ class GuiDrawer:
                 (12, "Bits",   pnum(d.node_new_bits(nid))),
                 (12, "Exit",   d.node_exit_reason(nid))])
             self.gui.print_thin_line()
-            #self.gui.print_hexdump(d.node_payload(nid), max_rows=12)
+            self.gui.print_hexdump(d.node_payload(nid), max_rows=12)
             self.gui.print_thin_line()
         else:
             self.gui.print_info_line([
@@ -316,7 +314,7 @@ class GuiDrawer:
                 (12, "Bits",   "  N/A"),
                 (12, "Exit",   " ")])
             self.gui.print_thin_line()
-            #self.gui.print_hexdump(b"importing...", max_rows=12)
+            self.gui.print_hexdump(b"importing...", max_rows=12)
         #self.gui.print_title_line("Log")
         self.gui.refresh()
 
