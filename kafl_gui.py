@@ -322,7 +322,9 @@ class GuiDrawer:
 
 
     def screen_custom(self, d):
+        self.gui.print_thin_line()
         self.gui.print_title_line("Custom Info")
+        self.gui.print_thin_line()
         if 'pso' in d.stats:
             self.gui.print_thin_line()
             self.gui.print_info_line([(20, 'state', d.pso_state()),
