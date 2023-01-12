@@ -108,8 +108,6 @@ class MasterProcess:
                     # Slave execution done, update queue item + send new task
                     log_master("Received results, sending next task..")
                     if msg["results"].get("pso", None):
-                        if self.pacemaker.on():
-                            self.pacemaker.update(finds=sum(msg["results"]["pso"]['state']['finds']))
                         self.pso.update_stats(msg["results"]["pso"])
                         msg["results"]["pso"] = None
                     if msg["node_id"]:
