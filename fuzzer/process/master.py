@@ -159,7 +159,7 @@ class MasterProcess:
             node.set_new_bytes(new_bytes, write=False)
             node.set_new_bits(new_bits, write=False)
             self.queue.insert_input(node, bitmap)
-            if node_struct["info"]["exit_reson"] == "crash":
+            if node_struct["info"]["exit_reason"] == "crash":
                 self.pacemaker.update(crash_time=time.time())
             self.pacemaker.update(path_time=time.time())
         elif self.debug_mode:
