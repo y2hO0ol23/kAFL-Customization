@@ -289,8 +289,8 @@ class GuiDrawer:
                                       (30, 'progress', d.pso_progress()),
                                       (13, 'cycles', '%4d'%d.pso_cycles())], prefix="PSO: ")
         
-        #self.gui.print_thin_line()
-        #self.gui.print_info_line([(78, 'Pacemaker', d.pacemaker_state())])
+        self.gui.print_thin_line()
+        self.gui.print_info_line([(78, 'Pacemaker', d.pacemaker_state())])
 
 
         i = self.current_slave_id
@@ -306,7 +306,7 @@ class GuiDrawer:
                 (12, "Bits",   pnum(d.node_new_bits(nid))),
                 (12, "Exit",   d.node_exit_reason(nid))])
             self.gui.print_thin_line()
-            self.gui.print_hexdump(d.node_payload(nid), max_rows=12)
+            #self.gui.print_hexdump(d.node_payload(nid), max_rows=12)
             self.gui.print_thin_line()
         else:
             self.gui.print_info_line([
@@ -316,7 +316,7 @@ class GuiDrawer:
                 (12, "Bits",   "  N/A"),
                 (12, "Exit",   " ")])
             self.gui.print_thin_line()
-            self.gui.print_hexdump(b"importing...", max_rows=12)
+            #self.gui.print_hexdump(b"importing...", max_rows=12)
         #self.gui.print_title_line("Log")
         self.gui.refresh()
 
