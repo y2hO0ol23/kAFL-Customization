@@ -21,7 +21,6 @@ import psutil
 from common.util import read_binary_file
 from threading import Thread, Lock
 
-
 class Interface:
     def __init__(self, stdscr):
         self.stdscr = stdscr
@@ -288,8 +287,9 @@ class GuiDrawer:
                                       (30, 'progress', d.pso_progress()),
                                       (13, 'cycles', '%4d'%d.pso_cycles())], prefix="PSO: ")
         
-        self.gui.print_info_line([(20, 'Pacemaker', d.pacemaker_state()),
-                                  (52, '', '')])
+        self.gui.print_thin_line()
+        self.gui.print_info_line([(25, 'Pacemaker', d.pacemaker_state()),
+                                  (47, 'progress', d.pacemaker_progress())])
         
         i = self.current_slave_id
         self.gui.print_thin_line()
@@ -715,9 +715,24 @@ class GuiData:
         return self.stats["pso"]["cycles"]
     
     def pacemaker_state(self):
-        if self.stats['pacemaker']:
+        if self.stats['pacemaker']['state']:
             return 'on'
         return 'off'
+    
+    def pacemaker_progress(self):
+        pacemaker = self.stats['pacemaker']
+        if pacemaker['state']:
+            if 0 < pacemaker['bound'] < 1:
+                total_finds = self.stats["bytes_in_bitmap"]
+                new_finds = total_finds - pacemaker['total_finds_last']
+                return "%d/%d"%(new_finds - new_finds * pacemaker['bound'], pacemaker['total_finds_last'])
+                    
+            else:
+                return "N/A"
+        else:
+            if time.time() + self.stats['pacemaker']['time_limit'] - self.stats['pacemaker']['last_time'] < 2:
+                return "Something founds!"
+            return ptime(time.time() + self.stats['pacemaker']['time_limit'] - self.stats['pacemaker']['last_time'])
         
 
 def main(stdscr):

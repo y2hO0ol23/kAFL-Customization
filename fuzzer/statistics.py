@@ -41,15 +41,20 @@ class MasterStatistics:
                     "crash": 0,
                     "kasan": 0,
                     "timeout": 0,
-                    },
+                },
                 "num_slaves": self.num_slaves,
                 "pso": {
                     "state": "N/A", 
                     "progress": "N/A", 
                     "cycles":0 
-                    },
-                "pacemaker": False
+                },
+                "pacemaker": {
+                    "state": False,
+                    "last_time": time.time(),
+                    "time_limit": 60,
+                    "tmp_mode": True
                 }
+            }
 
         self.stats_file = self.work_dir + "/stats"
         self.plot_file  = self.work_dir + "/stats.csv"
@@ -107,8 +112,17 @@ class MasterStatistics:
             with open(self.pso_file, 'a') as fd:
                 fd.write(res + '\n')
     
-    def event_pacemaker_update(self, state):
-        self.data['pacemaker'] = state
+    def event_pacemaker_update(self, data):
+        if "state" in data:
+            self.data['pacemaker']['state'] = data['state']
+        if "last_time" in data:
+            self.data['pacemaker']['last_time'] = data['last_time']
+        if "time_limit" in data:
+            self.data['pacemaker']['time_limit'] = data['time_limit']
+        if "bound" in data:
+            self.data['pacemaker']['bound'] = data['bound']
+        if "total_finds_last" in data:
+            self.data['pacemaker']['total_finds_last'] = data['total_finds_last']
     
     def event_node_remove_fav_bit(self, node):
         # called when queue manager removed a fav bit from an existing node.
