@@ -289,7 +289,7 @@ class GuiDrawer:
                                       (13, 'cycles', '%4d'%d.pso_cycles())], prefix="PSO: ")
         
         self.gui.print_thin_line()
-        self.gui.print_info_line([(78, 'Pacemaker', d.pacemaker_state())])
+        self.gui.print_info_line([(50, 'Pacemaker', d.pacemaker_state())])
         
         i = self.current_slave_id
         self.gui.print_thin_line()
