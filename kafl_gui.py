@@ -329,6 +329,7 @@ class GuiDrawer:
         self.gui.print_thin_line()
         self.gui.print_title_line("Custom Info")
         self.gui.print_thin_line()
+
         self.gui.print_info_line([(20, 'state', d.pso_state()),
                                   (30, 'progress', d.pso_progress()),
                                   (13, 'cycles', '%4d'%d.pso_cycles())], prefix="PSO: ")
@@ -337,12 +338,13 @@ class GuiDrawer:
         self.gui.print_info_line([(25, 'Pacemaker', d.pacemaker_state()),
                                   (47, 'progress', d.pacemaker_progress())])
         
-        max_rows=12
-        for _ in range(max_rows - 3):
+        self.gui.print_thin_line()
+
+        max_rows = 12 + 3
+        for _ in range(max_rows - 4):
             self.gui.stdscr.addstr(self.gui.y, 0, ' ' * 80)
             self.gui.y += 1
 
-        self.gui.print_thin_line()
         
     
 
