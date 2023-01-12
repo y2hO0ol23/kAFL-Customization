@@ -762,9 +762,10 @@ class GuiData:
             else:
                 return "N/A"
         else:
-            if time.time() + self.stats['pacemaker']['time_limit'] - self.stats['pacemaker']['last_time'] < 2:
+            t = self.stats['pacemaker']['time_limit'] + self.stats['pacemaker']['last_time'] - time.time()
+            if t < 2:
                 return "Something founds!"
-            return ptime(self.stats['pacemaker']['time_limit'] + self.stats['pacemaker']['last_time'] - time.time())
+            return ptime(t)
         
 
 def main(stdscr):
