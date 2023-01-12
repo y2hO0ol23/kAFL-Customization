@@ -169,6 +169,7 @@ class GuiDrawer:
         self.workdir = workdir
         self.finished = False
         self.current_slave_id = 0
+        self.current_screen_id = 0
         self.stdscr = stdscr
 
         # Fenster und Hintergrundfarben
