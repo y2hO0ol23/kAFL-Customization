@@ -9,7 +9,7 @@ if [ "$execDir" != `pwd` ]; then
     exit 1
 fi
 
-this="/kAFL-Customization"
+this="kAFL-Customization"
 if [[ "$dirPath" != *$this ]]; then
     echo "[-] Wrong directory name. Must be $this"
     exit 2
