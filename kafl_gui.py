@@ -318,7 +318,7 @@ class GuiDrawer:
                 (12, "Exit",   " ")])
             self.gui.print_thin_line()
             self.gui.print_hexdump(b"importing...", max_rows=12)
-            self.gui.print_thin_line()
+            self.gui.print_sep_line()
 
 
     def screen_custom(self, d):
@@ -328,7 +328,7 @@ class GuiDrawer:
 
         self.gui.print_thin_line()
         self.gui.print_title_line("Custom Info")
-        self.gui.print_thin_line()
+        self.gui.print_sep_line()
 
         self.gui.print_info_line([(20, 'state', d.pso_state()),
                                   (30, 'progress', d.pso_progress()),
@@ -338,7 +338,7 @@ class GuiDrawer:
         self.gui.print_info_line([(25, 'Pacemaker', d.pacemaker_state()),
                                   (47, 'progress', d.pacemaker_progress())])
         
-        self.gui.print_thin_line()
+        self.gui.print_sep_line()
 
         max_rows = 12 + 3
         for _ in range(max_rows - 4):
