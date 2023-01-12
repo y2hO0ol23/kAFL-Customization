@@ -336,6 +336,11 @@ class GuiDrawer:
         self.gui.print_thin_line()
         self.gui.print_info_line([(25, 'Pacemaker', d.pacemaker_state()),
                                   (47, 'progress', d.pacemaker_progress())])
+        
+        max_rows=12
+        for _ in range(max_rows - 3):
+            self.gui.stdscr.addstr(self.y, 0, ' ' * 80)
+            self.gui.y += 1
 
         self.gui.print_thin_line()
         
@@ -759,7 +764,7 @@ class GuiData:
         else:
             if time.time() + self.stats['pacemaker']['time_limit'] - self.stats['pacemaker']['last_time'] < 2:
                 return "Something founds!"
-            return ptime(time.time() + self.stats['pacemaker']['time_limit'] - self.stats['pacemaker']['last_time'])
+            return ptime(self.stats['pacemaker']['time_limit'] + self.stats['pacemaker']['last_time'] - time.time())
         
 
 def main(stdscr):
