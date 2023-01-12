@@ -346,8 +346,10 @@ class GuiDrawer:
             elif char == curses.KEY_DOWN:
                 self.current_slave_id = (self.current_slave_id + 1) % self.data.num_slaves()
                 redraw = True
-            if char == curses.KEY_LEFT:
-                self.current_screen_id = 
+            elif char == curses.KEY_LEFT:
+                self.current_screen_id = (self.current_screen_id + 1) % len(self.screen)
+            elif char == curses.KEY_RIGHT:
+                self.current_screen_id = (len(self.screen) + self.current_screen_id - 1) % len(self.screen)
             elif char == ord("q") or char == ord("Q"):
                 self.finished = True
                 return
