@@ -12,8 +12,7 @@ class Pacemaker:
     def __init__(self, statistics, time_limit):
         self.statistics = statistics
         self.time_limit = time_limit * 60
-        self.last_path_time = 0
-        self.last_crash_time = 0
+        self.last_time = 0
         self.key = False
 
     
@@ -27,18 +26,14 @@ class Pacemaker:
                     self.key = False
 
         else:
-            if self.last_path_time:
-                if time.time() - self.last_path_time >= self.time_limit:
-                    if time.time() - self.last_crash_time >= self.time_limit:
-                        self.statistics.event_pacemaker_update(True)
-                        self.key = True
-                        self.total_finds_last = self.statistics.data["bytes_in_bitmap"]
+            if self.last_time:
+                if time.time() - self.last_time >= self.time_limit:
+                    self.statistics.event_pacemaker_update(True)
+                    self.key = True
+                    self.total_finds_last = self.statistics.data["bytes_in_bitmap"]
             
         return self.key
 
 
-    def update(self, **data):
-        if 'path_time' in data:
-            self.last_path_time = data['path_time']
-        if 'crach_time' in data:
-            self.last_crash_time = data['crash_time']
+    def update_new_event(self):
+        self.last_time = time.time()

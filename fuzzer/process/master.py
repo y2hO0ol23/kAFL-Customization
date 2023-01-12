@@ -158,9 +158,8 @@ class MasterProcess:
             node.set_new_bytes(new_bytes, write=False)
             node.set_new_bits(new_bits, write=False)
             self.queue.insert_input(node, bitmap)
-            if node_struct["info"]["exit_reason"] == "crash":
-                self.pacemaker.update(crash_time=time.time())
-            self.pacemaker.update(path_time=time.time())
+            if len(node.get_new_bytes()) > 0 or node_struct["info"]["exit_reason"] == "crash":
+                self.pacemaker.update_new_event()
         elif self.debug_mode:
             if node_struct["info"]["exit_reason"] != "regular":
                 log_master("Payload found to be boring, not saved (exit=%s)" % node_struct["info"]["exit_reason"])
