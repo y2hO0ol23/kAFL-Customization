@@ -35,5 +35,7 @@ if [ ! -z $1 ]; then
 fi
 
 cp -rf ./kAFL-Customization ./kAFL-Fuzzer
-rm ./kAFL-Fuzzer/setup.bash
+if [ -f "./kAFL-Fuzzer/setup.bash" ]; then
+    rm ./kAFL-Fuzzer/setup.bash
+fi
 echo "[*] Done"
