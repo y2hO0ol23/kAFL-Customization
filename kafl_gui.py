@@ -322,18 +322,21 @@ class GuiDrawer:
 
 
     def screen_custom(self, d):
+        if not 'pso' in d.stats:
+            self.screen_origin(d)
+            return
+
         self.gui.print_thin_line()
         self.gui.print_title_line("Custom Info")
         self.gui.print_thin_line()
-        if 'pso' in d.stats:
-            self.gui.print_thin_line()
-            self.gui.print_info_line([(20, 'state', d.pso_state()),
-                                      (30, 'progress', d.pso_progress()),
-                                      (13, 'cycles', '%4d'%d.pso_cycles())], prefix="PSO: ")
+        self.gui.print_info_line([(20, 'state', d.pso_state()),
+                                  (30, 'progress', d.pso_progress()),
+                                  (13, 'cycles', '%4d'%d.pso_cycles())], prefix="PSO: ")
         
         self.gui.print_thin_line()
         self.gui.print_info_line([(25, 'Pacemaker', d.pacemaker_state()),
                                   (47, 'progress', d.pacemaker_progress())])
+
         self.gui.print_thin_line()
         
     
