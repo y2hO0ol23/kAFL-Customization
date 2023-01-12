@@ -142,8 +142,8 @@ def add_args_fuzzer(parser):
                         type=int, required=False, default=None)
     parser.add_argument('-abort_exec', metavar='<n>', help="exit after max executions",
                         type=int, required=False, default=None)
-
-    parser.add_argument('-pacemaker', metavar='<n>', help='time limit for pacemaker fuzz about n minutes',
+    print('test')
+    parser.add_argument('-L', metavar='<n>', help='set time limit to n minute for pacemaker fuzz.s',
                         type=int, required=False, default=1)
 
 # Qemu/Slave-specific launch options
