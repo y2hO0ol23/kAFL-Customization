@@ -43,9 +43,9 @@ class Pacemaker:
 
 
     def update(self, **data):
-        if data['path_time']:
+        if 'path_time' in data:
             self.last_path_time = data['path_time']
-        if data['crach_time']:
+        if 'crach_time' in data:
             self.last_crash_time = data['crash_time']
-        if data['finds']:
+        if 'finds' in data:
             self.new_finds += data['finds']
