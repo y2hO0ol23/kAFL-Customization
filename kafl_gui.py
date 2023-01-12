@@ -192,6 +192,11 @@ class GuiDrawer:
         self.cpu_watcher.daemon = True
         self.cpu_watcher.start()
 
+        self.screen = (
+            self.screen_origin,
+            self.screen_custom,
+        )
+
 
     def draw(self):
         d = self.data
@@ -281,16 +286,13 @@ class GuiDrawer:
                                           (13, "exec/s",    "  N/A ")],
                                           prefix="%c Slave %2d" % (hl, i))
 
-        if 'pso' in d.stats:
-            self.gui.print_thin_line()
-            self.gui.print_info_line([(20, 'state', d.pso_state()),
-                                      (30, 'progress', d.pso_progress()),
-                                      (13, 'cycles', '%4d'%d.pso_cycles())], prefix="PSO: ")
-        
-        self.gui.print_thin_line()
-        self.gui.print_info_line([(25, 'Pacemaker', d.pacemaker_state()),
-                                  (47, 'progress', d.pacemaker_progress())])
-        
+        self.screen[self.current_screen_id](d)
+
+        #self.gui.print_title_line("Log")
+        self.gui.refresh()
+
+
+    def screen_origin(self, d):
         i = self.current_slave_id
         self.gui.print_thin_line()
         self.gui.print_title_line("Payload Info")
@@ -315,8 +317,23 @@ class GuiDrawer:
                 (12, "Exit",   " ")])
             self.gui.print_thin_line()
             self.gui.print_hexdump(b"importing...", max_rows=12)
-        #self.gui.print_title_line("Log")
-        self.gui.refresh()
+            self.gui.print_thin_line()
+
+
+    def screen_custom(self, d):
+        self.gui.print_title_line("Custom Info")
+        if 'pso' in d.stats:
+            self.gui.print_thin_line()
+            self.gui.print_info_line([(20, 'state', d.pso_state()),
+                                      (30, 'progress', d.pso_progress()),
+                                      (13, 'cycles', '%4d'%d.pso_cycles())], prefix="PSO: ")
+        
+        self.gui.print_thin_line()
+        self.gui.print_info_line([(25, 'Pacemaker', d.pacemaker_state()),
+                                  (47, 'progress', d.pacemaker_progress())])
+        self.gui.print_thin_line()
+        
+    
 
     def loop(self):
         self.gui.refresh()
@@ -329,6 +346,8 @@ class GuiDrawer:
             elif char == curses.KEY_DOWN:
                 self.current_slave_id = (self.current_slave_id + 1) % self.data.num_slaves()
                 redraw = True
+            if char == curses.KEY_LEFT:
+                self.current_screen_id = 
             elif char == ord("q") or char == ord("Q"):
                 self.finished = True
                 return
