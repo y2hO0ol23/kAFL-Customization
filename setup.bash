@@ -32,6 +32,10 @@ if [ ! -z $1 ]; then
     else
         echo "[-] No file to backup"
     fi
+else
+    if [ -d "./kAFL-Fuzzer" ]; then
+        rm -rf ./kAFL-Fuzzer
+    fi
 fi
 
 cp -rf ./kAFL-Customization ./kAFL-Fuzzer
