@@ -16,19 +16,15 @@ class Pacemaker:
         self.last_crash_time = 0
         self.key = False
 
-        if Pacemaker.is_tmp_mode():
-            self.total_finds = 0
-            self.new_finds = 0
-
     
     def on(self):
         if self.key:
             if Pacemaker.is_tmp_mode():
-                if self.new_finds > self.new_finds * Pacemaker.bound + self.total_finds:
+                total_finds = self.statistics.data["bytes_in_bitmap"]
+                new_finds = total_finds - self.total_finds_last
+                if new_finds > new_finds * Pacemaker.bound + self.total_finds_last:
                     self.statistics.event_pacemaker_update(False)
                     self.key = False
-                    self.total_finds += self.new_finds
-                    self.new_finds = 0
 
         else:
             if self.last_path_time:
@@ -36,8 +32,7 @@ class Pacemaker:
                     if time.time() - self.last_crash_time >= self.time_limit:
                         self.statistics.event_pacemaker_update(True)
                         self.key = True
-                        self.total_finds += self.new_finds
-                        self.new_finds = 0
+                        self.total_finds_last = self.statistics.data["bytes_in_bitmap"]
             
         return self.key
 
@@ -47,5 +42,3 @@ class Pacemaker:
             self.last_path_time = data['path_time']
         if 'crach_time' in data:
             self.last_crash_time = data['crash_time']
-        if 'finds' in data:
-            self.new_finds += data['finds']
