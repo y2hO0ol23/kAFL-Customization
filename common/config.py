@@ -143,6 +143,9 @@ def add_args_fuzzer(parser):
     parser.add_argument('-abort_exec', metavar='<n>', help="exit after max executions",
                         type=int, required=False, default=None)
 
+    parser.add_argument('-L', required=False, metavar='<time>', action=FullPath,
+                        type=float, help='time limit for pacemaker fuzz.', default=1)
+
 # Qemu/Slave-specific launch options
 def add_args_qemu(parser):
 
@@ -188,12 +191,6 @@ def add_args_qemu(parser):
                         action='store_true', default=False)
     parser.add_argument('-gdbserver', required=False, help='enable Qemu gdbserver (use via kafl_debug.py!)',
                         action='store_true', default=False)
-
-def add_args_custom(parser):
-    parser.add_argument('-L', required=False, metavar='<time>', action=FullPath,
-                        type=float, help='time limit for pacemaker fuzz.')
-    #parser.add_argument('-dict', required=False, metavar='<file>', type=parse_is_file,
-    #                    help='import dictionary file for use in havoc stage.', default=None)
 
 
 class FullPath(argparse.Action):
@@ -315,8 +312,6 @@ class InfoConfiguration(six.with_metaclass(Singleton)):
         add_args_general(general)
         qemu = parser.add_argument_group('Qemu options')
         add_args_qemu(qemu)
-        custom = parser.add_argument_group('Custom options')
-        add_args_custom(custom)
 
         self.argument_values = vars(parser.parse_args())
 
@@ -371,9 +366,6 @@ class DebugConfiguration(six.with_metaclass(Singleton)):
 
         qemu = parser.add_argument_group('Qemu options')
         add_args_qemu(qemu)
-        
-        custom = parser.add_argument_group('Custom options')
-        add_args_custom(custom)
 
         self.argument_values = vars(parser.parse_args())
 
@@ -426,8 +418,5 @@ class FuzzerConfiguration(six.with_metaclass(Singleton)):
 
         qemu = parser.add_argument_group('Qemu options')
         add_args_qemu(qemu)
-
-        custom = parser.add_argument_group('Custom options')
-        add_args_custom(custom)
 
         self.argument_values = vars(parser.parse_args())
