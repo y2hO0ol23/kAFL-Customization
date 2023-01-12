@@ -11,7 +11,7 @@ class Pacemaker:
 
     def __init__(self, statistics, time_limit):
         self.statistics = statistics
-        self.time_limit = time_limit
+        self.time_limit = time_limit * 60
         self.last_path_time = 0
         self.last_crash_time = 0
         self.key = False

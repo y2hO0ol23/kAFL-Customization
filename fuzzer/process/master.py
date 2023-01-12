@@ -52,14 +52,7 @@ class MasterProcess:
                 )
 
         self.pso = ServerPSO(self.statistics)
-        
-        print(config.argument_values['L'])
-        if True:#not config.argument_values['L']:
-            default_time_limit = 60
-            self.pacemaker = Pacemaker(self.statistics, default_time_limit)
-        else:
-            time_limit = config.argument_values['L']
-            self.pacemaker = Pacemaker(self.statistics, time_limit)
+        self.pacemaker = Pacemaker(self.statistics, config.argument_values['L'])
 
         log_master("Starting (pid: %d)" % os.getpid())
         log_master("Configuration dump:\n%s" %
