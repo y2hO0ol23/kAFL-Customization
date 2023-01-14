@@ -52,7 +52,8 @@ class MasterStatistics:
                     "state": False,
                     "last_time": time.time(),
                     "time_limit": 60,
-                    "tmp_mode": True
+                    "tmp_mode": True,
+                    "use": True
                 }
             }
 
@@ -123,6 +124,8 @@ class MasterStatistics:
             self.data['pacemaker']['bound'] = data['bound']
         if "total_finds_last" in data:
             self.data['pacemaker']['total_finds_last'] = data['total_finds_last']
+        if "use" in data:
+            self.data['pacemaker']['use'] = data['use']
     
     def event_node_remove_fav_bit(self, node):
         # called when queue manager removed a fav bit from an existing node.

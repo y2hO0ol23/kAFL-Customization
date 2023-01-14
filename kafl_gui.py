@@ -749,12 +749,18 @@ class GuiData:
         return self.stats["pso"]["cycles"]
     
     def pacemaker_state(self):
+        if self.stats['pacemaker']['use'] == False:
+            return 'not used' 
         if self.stats['pacemaker']['state']:
             return 'on'
         return 'off'
     
     def pacemaker_progress(self):
+
         pacemaker = self.stats['pacemaker']
+        if pacemaker['use'] == False:
+            return 'N/A'
+            
         if pacemaker['state']:
             if 0 < pacemaker['bound'] < 1:
                 total_finds = self.stats["bytes_in_bitmap"]

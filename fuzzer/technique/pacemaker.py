@@ -10,14 +10,23 @@ class Pacemaker:
 
 
     def __init__(self, statistics, time_limit):
-        self.statistics = statistics
-        self.time_limit = time_limit * 60
-        self.last_time = 0
-        self.key = False
-        self.statistics.event_pacemaker_update({"time_limit": self.time_limit, 'bound': Pacemaker.bound})
+        self.use = (time_limit != None)
+
+        if self.use:
+            self.statistics = statistics
+            self.time_limit = time_limit * 60
+            self.last_time = 0
+            self.key = False
+            self.statistics.event_pacemaker_update({"time_limit": self.time_limit, 'bound': Pacemaker.bound})
+        
+        else:
+            self.statistics.event_pacemaker_update({"use":False})
 
     
     def on(self):
+        if self.use:
+            return False
+
         if self.key:
             if Pacemaker.is_tmp_mode():
                 total_finds = self.statistics.data["bytes_in_bitmap"]
@@ -37,5 +46,8 @@ class Pacemaker:
 
 
     def update_new_event(self):
+        if self.use:
+            return False
+
         self.last_time = time.time()
         self.statistics.event_pacemaker_update({'last_time': self.last_time})
