@@ -774,7 +774,7 @@ class GuiData:
             if self.stats['pacemaker']['time_limit'] - t < 2:
                 return "Something founds!"
             elif t < 2:
-                return f'0m0{int(t)}'
+                return f'0m0{max(int(t), 0)}s'
             return ptime(t)
         
 
