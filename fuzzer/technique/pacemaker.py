@@ -11,9 +11,9 @@ class Pacemaker:
 
     def __init__(self, statistics, time_limit):
         self.use = (time_limit != None)
+        self.statistics = statistics
 
         if self.use:
-            self.statistics = statistics
             self.time_limit = time_limit * 60
             self.last_time = 0
             self.key = False
