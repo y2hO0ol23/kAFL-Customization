@@ -24,7 +24,7 @@ class Pacemaker:
 
     
     def on(self):
-        if self.use:
+        if not self.use:
             return False
 
         if self.key:
@@ -46,8 +46,8 @@ class Pacemaker:
 
 
     def update_new_event(self):
-        if self.use:
-            return False
+        if not self.use:
+            return
 
         self.last_time = time.time()
         self.statistics.event_pacemaker_update({'last_time': self.last_time})
