@@ -84,12 +84,12 @@ class Scheduler:
         # TODO: only actually have to compute all this for new nodes and fav bit changes...
         node.set_score(score)
 
-        if node.get_state() in ["initial", "redq/grim"]:
+        if node.get_state() in ["initial", "havoc"]:
+            phase = 256
+        elif node.get_state() in ["redq/grim"]:
             phase = 8
         elif node.get_state() in ["deterministic"]:
             phase = 1
-        elif node.get_state() in ["havoc"]:
-            phase = 256
         elif node.get_state() in ["final"]:
             # promote later discovered nodes by compensating for total time spend in havoc.
             # TODO some nodes are buffed on purpose - should only promote based on relative
