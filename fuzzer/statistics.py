@@ -99,6 +99,12 @@ class MasterStatistics:
         if "cycles" in data:
             self.data["pso"]["cycles"] += data["cycles"]
         if "pso" in data:
+            res = ''
+            if "handlers" in data:
+                for handler in data['handlers']:
+                    res += ';' + handler.__name__
+                res += '\n'
+
             cur_time = time.time()
             run_time = cur_time - self.data["start_time"]
 
@@ -106,7 +112,7 @@ class MasterStatistics:
             G_best = data["pso"]['G_best']
             L_best = data["pso"]['L_best']
             handler_num = data["pso"]["handler_num"]
-            res = "%06d"%run_time
+            res += "%06d"%run_time
             for i in range(handler_num):
                 res += ";%.3f/%.3f/%.3f"%(x_now[i], G_best[i], L_best[i])
 
