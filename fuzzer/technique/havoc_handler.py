@@ -359,7 +359,6 @@ havoc_handler = [havoc_perform_bit_flip,
                  havoc_perform_byte_addition_32,
                  havoc_perform_set_random_byte_value,
                  havoc_perform_delete_random_byte,
-                 havoc_perform_delete_random_byte,
                  havoc_perform_clone_random_byte,
                  havoc_perform_byte_seq_override,
                  # dict mutators are initialized in havoc_init()
