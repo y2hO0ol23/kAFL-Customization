@@ -108,7 +108,7 @@ class MasterStatistics:
             handler_num = data["pso"]["handler_num"]
             res = "%06d"%run_time
             for i in range(handler_num):
-                res += ";%f/%f/%f"%(x_now[i], G_best[i], L_best[i])
+                res += ";%.3f/%.3f/%.3f"%(x_now[i], G_best[i], L_best[i])
 
             with open(self.pso_file, 'a') as fd:
                 fd.write(res + '\n')
