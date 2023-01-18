@@ -756,7 +756,6 @@ class GuiData:
         return 'off'
     
     def pacemaker_progress(self):
-
         pacemaker = self.stats['pacemaker']
         if pacemaker['use'] == False:
             return 'N/A'

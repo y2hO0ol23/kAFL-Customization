@@ -10,6 +10,9 @@ class Pacemaker:
 
 
     def __init__(self, statistics, time_limit):
+        if time_limit < 0:
+            time_limit = 0
+            
         self.use = (time_limit != None)
         self.statistics = statistics
 

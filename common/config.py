@@ -142,7 +142,7 @@ def add_args_fuzzer(parser):
                         type=int, required=False, default=None)
     parser.add_argument('-abort_exec', metavar='<n>', help="exit after max executions",
                         type=int, required=False, default=None)
-    parser.add_argument('-L', metavar='t', help='option for pacemaker fuzz',
+    parser.add_argument('-L', metavar='t', help='option for pacemaker fuzz', type=int, 
                         required=False, nargs='?', const=1, default=None)
 
 # Qemu/Slave-specific launch options
